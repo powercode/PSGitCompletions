@@ -44,10 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git.cs" />
     <Compile Include="GitCommand.cs" />
     <Compile Include="GitCompleter.cs" />
     <Compile Include="GitCommandOption.cs" />
     <Compile Include="GitCompletionExtensions.cs" />
+    <Compile Include="GitLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

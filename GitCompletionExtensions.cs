@@ -15,6 +15,11 @@ namespace PowerCode
             return str.StartsWith(value, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool IsEmpty(this string str)
+        {
+            return string.IsNullOrEmpty(str);
+        }
+
         public static bool IsGitCommand(this string str)
         {
             return str.IndexOf("git", StringComparison.OrdinalIgnoreCase) != -1;
@@ -30,4 +35,6 @@ namespace PowerCode
             return new CompletionResult(command.Completion, command.ListText, CompletionResultType.ParameterName, @command.ToolTip);
         }
     }
+
+    
 }
