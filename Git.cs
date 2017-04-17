@@ -20,16 +20,54 @@ namespace PowerCode
         }
     }
 
-public class GitRemote
+    public class GitRemoteRef : IEqualityComparer<GitRemoteRef>, IComparable<GitRemoteRef>
+    {
+        public string Commit { get; }
+        public string Remote { get; }
+        public string Ref { get; }
+
+        public string RemoteRef => $"{Remote}/{Ref}";
+
+        public GitRemoteRef(string commit, string remote)
+        {
+            Commit = commit;
+            var slash = remote.IndexOf("/", 13, StringComparison.OrdinalIgnoreCase);
+            Remote = remote.Substring(13, slash - 13);
+            Ref = remote.Substring(slash + 1);
+        }
+
+        public bool Equals(GitRemoteRef x, GitRemoteRef y)
+        {
+            return x.Commit == y.Commit;
+        }
+
+        public int GetHashCode(GitRemoteRef obj)
+        {
+            return Commit.GetHashCode();
+        }
+
+        public int CompareTo(GitRemoteRef other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            var remoteComparison = string.Compare(Remote, other.Remote, StringComparison.Ordinal);
+            if (remoteComparison != 0) return remoteComparison;
+            return string.Compare(Ref, other.Ref, StringComparison.Ordinal);
+        }
+    }
+
+    public class GitRemoteUrl
     {
         public string Name { get; }
         public string FetchUrl { get; set; }
         public string PushUrl { get; set; }
 
-        public GitRemote(string name)
+        public GitRemoteUrl(string name)
         {
             Name = name;
         }
+
+
     }
     public class Git
     {
@@ -50,10 +88,10 @@ public class GitRemote
             }
         }
 
-        public static IEnumerable<GitRemote> Remotes()
+        public static IEnumerable<GitRemoteUrl> Remotes()
         {
             var res = Execute("git remove -v");
-            GitRemote current = null;
+            GitRemoteUrl current = null;
             foreach (string line in res)
             {
                 var parts = line.Split('\t');
@@ -61,14 +99,14 @@ public class GitRemote
                 var uri = parts[1];
                 if (current == null)
                 {
-                    current = new GitRemote(name);
+                    current = new GitRemoteUrl(name);
                 }
 
 
                 if (current.Name != name)
                 {
                     yield return current;
-                    current = new GitRemote(name);
+                    current = new GitRemoteUrl(name);
                 }
                 if (uri.EndsWith("(fetch)"))
                 {
@@ -85,7 +123,22 @@ public class GitRemote
             }
         }
 
+        public static IEnumerable<GitRemoteRef> RemoteRefs()
+        {
+            return Execute("git for-each-ref '--format=%(objectname) %(refname)' refs/remotes/*/*")
+                .Select(l => new GitRemoteRef(l.Substring(0, 40), l.Substring(41)));
+        }
+
         public static IEnumerable<GitRef> Refs(string match)
+        {
+            var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
+            foreach (string line in res)
+            {
+                yield return new GitRef(line.Substring(0, 40), line.Substring(41));
+            }
+        }
+
+        public static IEnumerable<GitRef> Remotes(string match)
         {
             var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
             foreach (string line in res)

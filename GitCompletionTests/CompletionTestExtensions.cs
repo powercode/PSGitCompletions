@@ -21,5 +21,7 @@ namespace GitCompletionTests
         {
             return str.CompleteInput("", str.Length);
         }
+
+
     }
 }

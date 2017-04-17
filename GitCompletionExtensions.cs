@@ -22,7 +22,7 @@ namespace PowerCode
 
         public static bool IsGitCommand(this string str)
         {
-            return str.IndexOf("git", StringComparison.OrdinalIgnoreCase) != -1;
+            return !string.IsNullOrEmpty(str) && str.IndexOf("git", StringComparison.OrdinalIgnoreCase) != -1;
         }
 
         public static CompletionResult ToCompletionResult(this GitCommand command)
@@ -36,5 +36,5 @@ namespace PowerCode
         }
     }
 
-    
+
 }

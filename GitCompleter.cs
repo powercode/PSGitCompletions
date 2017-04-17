@@ -20,7 +20,7 @@ namespace PowerCode
                 switch (ast.CommandElements[prevIndex])
                 {
                     case CommandParameterAst p:
-                        previosParameterName = p.ParameterName;
+                        previosParameterName = p.Extent.Text;
                         break;
                     case StringConstantExpressionAst s:
                         previousParameterValue = s.Value;
@@ -47,6 +47,37 @@ namespace PowerCode
         {
             switch (commandName)
             {
+                case "branch":
+                    if (!wordToComplete.StartsWith("-"))
+                    {
+                        return CompleteBranches(wordToComplete);
+                    }
+                    goto default;
+                case "checkout":
+                    if (string.IsNullOrEmpty(previosParameterName) && !wordToComplete.StartsWith("-"))
+                    {
+                        return CompleteBranches(wordToComplete);
+                    }
+                    goto default;
+                case "fetch":
+                    if (!wordToComplete.StartsWith("-"))
+                    {
+                        if (!string.IsNullOrEmpty(previousParameterValue) && previousParameterValue != commandName)
+                        {
+                            return Git.RemoteRefs()
+                                .Where(r => r.Remote.IgnoreCaseEquals(previousParameterValue) && r.Ref.IgnoreCaseStartsWith(wordToComplete))
+                                .Select(c => new CompletionResult(c.Ref, c.Ref, CompletionResultType.ParameterValue,
+                                    c.RemoteRef))
+                                .ToList();
+                        }
+                        return Git.RemoteRefs()
+                            .Where(r => r.Remote.IgnoreCaseStartsWith(wordToComplete))
+                            .GroupBy(c=>c.Remote)
+                            .Select(g=>g.First())
+                            .Select(c => new CompletionResult(c.Remote, c.Remote, CompletionResultType.ParameterValue, c.Remote))
+                            .ToList();
+                    }
+                    goto default;
                 case "diff":
                 case "rebase":
                     if (wordToComplete.IsEmpty())
@@ -64,6 +95,11 @@ namespace PowerCode
                 default:
                     return GitOptionsToCompletionResults(gitCommandOptions, wordToComplete);
             }
+        }
+
+        private static IList<CompletionResult> CompleteBranches(string wordToComplete)
+        {
+            return Git.Heads(wordToComplete).Select(c => new CompletionResult(c,c,CompletionResultType.ParameterValue,c)).ToList();
         }
 
         private static List<CompletionResult> GitOptionsToCompletionResults(GitCommandOption[] gitCommandOptions, string wordToComplete)

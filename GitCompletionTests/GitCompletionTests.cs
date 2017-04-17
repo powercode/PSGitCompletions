@@ -47,6 +47,62 @@ namespace GitCompletionTests
             }
         }
 
+        [TestMethod]
+        public void CanCompleteGetGitFetchRemoteRef()
+        {
+            using (new GitExecuterScope(Git.GitExecuter))
+            {
+                Git.GitExecuter = GetGitRemoteRefs;
+                var completions = "git fetch origin".CompleteInput();
+                Assert.AreEqual(3, completions.Count);
+                Assert.AreEqual("ForEach", completions[0].CompletionText);
+
+            }
+        }
+
+        [TestMethod]
+        public void CanCompleteGetGitFetchRemote()
+        {
+            using (new GitExecuterScope(Git.GitExecuter))
+            {
+                Git.GitExecuter = GetGitRemoteRefs;
+                var completions = "git fetch ".CompleteInput();
+                Assert.AreEqual(2, completions.Count);
+                Assert.AreEqual("upstream", completions[1].CompletionText);
+
+            }
+        }
+
+        [TestMethod]
+        public void CanGetGitRemoteRefs()
+        {
+            using (new GitExecuterScope(Git.GitExecuter))
+            {
+                Git.GitExecuter = GetGitRemoteRefs;
+                var remoteRefs = Git.RemoteRefs().ToArray();
+                Assert.AreEqual("ForEach", remoteRefs[0].Ref);
+                Assert.AreEqual("fea270412167ad3e4e5a5297642dcb7d5f9c51ee", remoteRefs[2].Commit);
+                Assert.AreEqual("origin", remoteRefs[1].Remote);
+                Assert.AreEqual("origin/ext-method", remoteRefs[2].RemoteRef);
+            }
+        }
+
+        [TestMethod]
+        public void CanGetGitRemoteUrls()
+        {
+            using (new GitExecuterScope(Git.GitExecuter))
+            {
+                Git.GitExecuter = GetGitRemoteurl;
+                var remoteRefs = Git.Remotes().ToArray();
+                Assert.AreEqual("origin", remoteRefs[0].Name);
+                Assert.AreEqual("https://github.com/powershell/PowerShell (fetch)", remoteRefs[1].FetchUrl);
+                Assert.AreEqual("https://github.com/powershell/PowerShell (fetch)", remoteRefs[1].FetchUrl);
+            }
+        }
+
+
+
+
         string[] GetGitLog(string command)
         {
             return new[]
@@ -71,6 +127,30 @@ namespace GitCompletionTests
                 "18c28f8f Fix markdown lint issues for SSH Remoting demo and enable related tests (#3484)",
                 "4697dd2b Adding public ValidRootDrives property to ValidateDrive (#3510)",
                 "753b1965 Fix crash at startup when env:HOME not set (#3437)"
+            };
+        }
+
+        string[] GetGitRemoteRefs(string command)
+        {
+            return new[]
+            {
+                "b80765d703f2e3766b4838f14455c40da255fa88 refs/remotes/origin/ForEach",
+                "636a14cff5672bddc638786a42802681bc4d382d refs/remotes/origin/HEAD",
+                "fea270412167ad3e4e5a5297642dcb7d5f9c51ee refs/remotes/origin/ext-method",
+                "5f308d5ea80699ee0379c341ed5de070ed49944c refs/remotes/upstream/ForEach",
+                "1c2c3a223f024371677846d2a8b5e4a6079e8cd7 refs/remotes/upstream/import-datafile",
+                "38f6dad857ee8a70a1d7b23c67f2af32ffe50d40 refs/remotes/upstream/make-csproj-build",
+            };
+        }
+
+        string[] GetGitRemoteurl(string command)
+        {
+            return new[]
+            {
+                "origin	https://github.com/powercode/PowerShell (fetch)",
+                "origin	https://github.com/powercode/PowerShell (push)",
+                "upstream	https://github.com/powershell/PowerShell (fetch)",
+                "upstream	https://github.com/powershell/PowerShell (push)"
             };
         }
 
