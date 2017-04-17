@@ -10,8 +10,8 @@ Set-PSReadlineOption -ShowTooltip
 cd <mygitrepo>
 git com<tab> --am<tab>
 
-git diff <tab> # Expands with list of 50 most recent commits
-git diff added<tab #expands with list of commits where message contains 'added'
+git diff <ctrl+space>      # Expands with list of 50 most recent commits
+git diff added<ctrl+space> # Expands with list of commits where message contains 'added'
 ```
 
 ## Provides command line completions for git
