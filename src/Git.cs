@@ -96,7 +96,7 @@ namespace PowerCode {
             }
         }
 
-        public IEnumerable<GitStatus> Status() {
+        public static IEnumerable<GitStatus> Status() {
             return Execute("git status --porcelain")
                 .Select(l => new GitStatus(l[0].ToStatus(), l[1].ToStatus(), l.Substring(3)));
         }

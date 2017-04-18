@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSGitCompletions", "PSGitCompletions.csproj", "{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitCompletionTests", "GitCompletionTests\GitCompletionTests.csproj", "{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSGitCompletions", "src\PSGitCompletions.csproj", "{BD3334AF-FE8D-4A0F-A2F0-AB0CBA2611DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD3334AF-FE8D-4A0F-A2F0-AB0CBA2611DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD3334AF-FE8D-4A0F-A2F0-AB0CBA2611DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD3334AF-FE8D-4A0F-A2F0-AB0CBA2611DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD3334AF-FE8D-4A0F-A2F0-AB0CBA2611DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

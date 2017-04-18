@@ -50,7 +50,10 @@ namespace PowerCode {
             string wordToComplete, bool afterDoubleDash) {
             switch (commandName) {
                 case "add":
-
+                    if (!wordToComplete.StartsWith("-")) {
+                        return CompleteFiles(wordToComplete);
+                    }
+                    goto default;
                 case "branch":
                     if (!wordToComplete.StartsWith("-"))
                         return CompleteBranches(wordToComplete);
@@ -95,6 +98,10 @@ namespace PowerCode {
                 default:
                     return GitOptionsToCompletionResults(gitCommandOptions, wordToComplete);
             }
+        }
+
+        private static IList<CompletionResult> CompleteFiles(string wordToComplete) {
+            throw new System.NotImplementedException();
         }
 
         private static IList<CompletionResult> CompleteBranches(string wordToComplete) {
