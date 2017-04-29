@@ -17,13 +17,15 @@ namespace PowerCode {
             }
         }
 
+
+
         public static IList<CompletionResult> CompleteInput(string wordToComplete, CommandAst ast, int cursorPosition) {
             var elementCount = ast.CommandElements.Count;
             var prevIndex = elementCount - (string.IsNullOrEmpty(wordToComplete) ? 1 : 2);
             string previosParameterName = null;
             string previousParameterValue = null;
             var doubleDash = ast.CommandElements.FirstOrDefault(c => c.Extent.Text == "--");
-            var afterDoubleDash = doubleDash != null && doubleDash.Extent.EndColumnNumber < cursorPosition;
+            var afterDoubleDash = doubleDash != null && doubleDash.Extent.EndColumnNumber <= cursorPosition;
             if (prevIndex < elementCount)
                 switch (ast.CommandElements[prevIndex]) {
                     case CommandParameterAst p:
@@ -37,6 +39,7 @@ namespace PowerCode {
             if (previousParameterValue.IsGitCommand())
                 return CompleteGitCommands(wordToComplete);
             var commandName = ast.CommandElements[1].Extent.Text;
+
             var gitCommand = GitCommand.GetOptions(commandName);
             if (gitCommand != null)
                 return CompleteGitCommand(commandName, gitCommand, previosParameterName, previousParameterValue,
@@ -48,14 +51,21 @@ namespace PowerCode {
         private static IList<CompletionResult> CompleteGitCommand(string commandName,
             GitCommandOption[] gitCommandOptions, string previosParameterName, string previousParameterValue,
             string wordToComplete, bool afterDoubleDash) {
+            if (previousParameterValue == commandName && commandName.IsRefCompleteCommand())
+                return CompleteRefs(wordToComplete);
+
             switch (commandName) {
                 case "add":
-
+                    if (!previousParameterValue.IgnoreCaseStartsWith("-")) {
+                        return CompleteAddFiles(wordToComplete);
+                    }
+                    goto default;
                 case "branch":
                     if (!wordToComplete.StartsWith("-"))
                         return CompleteBranches(wordToComplete);
                     goto default;
                 case "checkout":
+                    if (afterDoubleDash) return CompleteCheckoutFiles(wordToComplete);
                     if (string.IsNullOrEmpty(previosParameterName) && !wordToComplete.StartsWith("-"))
                         return CompleteBranches(wordToComplete);
                     goto default;
@@ -78,6 +88,9 @@ namespace PowerCode {
                     }
                     goto default;
                 case "diff":
+                case "difftool":
+                    if (afterDoubleDash) return CompleteDiffFiles(wordToComplete);
+                    goto default;
                 case "rebase":
                     if (wordToComplete.IsEmpty())
                         return Git.Log()
@@ -95,6 +108,39 @@ namespace PowerCode {
                 default:
                     return GitOptionsToCompletionResults(gitCommandOptions, wordToComplete);
             }
+        }
+
+        private static IList<CompletionResult> CompleteAddFiles(string wordToComplete) {
+            return Git.Status()
+                .Where(s => s.IsAddable() && s.Path.IgnoreCaseStartsWith(wordToComplete))
+                .Select(s => s.ToCompletionResult(s.Working.ToString()))
+                .ToList();
+        }
+
+        private static IList<CompletionResult> CompleteRefs(string wordToComplete) {
+            var results = new List<CompletionResult>();
+            results.AddRange(CompleteBranches(wordToComplete));
+            results.AddRange(CompleteTags(wordToComplete));
+            return results;
+        }
+
+        private static IEnumerable<CompletionResult> CompleteTags(string wordToComplete) {
+            return Git.Tags(wordToComplete)
+                .Select(s => new CompletionResult(s));
+        }
+
+        private static IList<CompletionResult> CompleteDiffFiles(string wordToComplete) {
+            return Git.Status()
+                .Where(s => s.IsWorkingDiffable() && s.Path.IgnoreCaseStartsWith(wordToComplete))
+                .Select(s => s.ToCompletionResult())
+                .ToList();
+        }
+
+        private static IList<CompletionResult> CompleteCheckoutFiles(string wordToComplete) {
+            return Git.Status()
+                .Where(s => s.Working != Status.Unmodified && s.Path.IgnoreCaseStartsWith(wordToComplete))
+                .Select(s => s.ToCompletionResult(s.Working.ToString()))
+                .ToList();
         }
 
         private static IList<CompletionResult> CompleteBranches(string wordToComplete) {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
 
@@ -28,67 +29,17 @@ namespace PowerCode {
         Ignored
     }
 
-    public class GitStatus {
-        public  Status XStatus { get; }
-        public Status YStatus { get; }
-
-        public string Path { get; }
-
-        public GitStatus(Status xStatus, Status yStatus, string path) {
-            XStatus = xStatus;
-            YStatus = yStatus;
-            Path = path;
-        }
-    }
-
-    public class GitRemoteRef : IEqualityComparer<GitRemoteRef>, IComparable<GitRemoteRef> {
-        public GitRemoteRef(string commit, string remote) {
-            Commit = commit;
-            var slash = remote.IndexOf("/", 13, StringComparison.OrdinalIgnoreCase);
-            Remote = remote.Substring(13, slash - 13);
-            Ref = remote.Substring(slash + 1);
-        }
-
-        public string Commit { get; }
-        public string Remote { get; }
-        public string Ref { get; }
-
-        public string RemoteRef => $"{Remote}/{Ref}";
-
-        public int CompareTo(GitRemoteRef other) {
-            if (ReferenceEquals(this, other)) return 0;
-            if (ReferenceEquals(null, other)) return 1;
-            var remoteComparison = string.Compare(Remote, other.Remote, StringComparison.Ordinal);
-            if (remoteComparison != 0) return remoteComparison;
-            return string.Compare(Ref, other.Ref, StringComparison.Ordinal);
-        }
-
-        public bool Equals(GitRemoteRef x, GitRemoteRef y) {
-            return x.Commit == y.Commit;
-        }
-
-        public int GetHashCode(GitRemoteRef obj) {
-            return Commit.GetHashCode();
-        }
-    }
-
-    public class GitRemoteUrl {
-        public GitRemoteUrl(string name) {
-            Name = name;
-        }
-
-        public string Name { get; }
-        public string FetchUrl { get; set; }
-        public string PushUrl { get; set; }
-    }
-
     public class Git {
+        /// <summary>
+        ///     Give a way to fake git for testing
+        /// </summary>
         public static Func<string, IEnumerable<string>> GitExecuter = GitExecute;
 
-        private static IEnumerable<string> Execute(string command) {
-            return GitExecuter(command);
-        }
-
+        /// <summary>
+        ///     Default implementation for GitExecuter
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         private static IEnumerable<string> GitExecute(string command) {
             using (var ps = PowerShell.Create(RunspaceMode.CurrentRunspace)) {
                 ps.AddScript(command);
@@ -96,13 +47,19 @@ namespace PowerCode {
             }
         }
 
-        public IEnumerable<GitStatus> Status() {
+
+        private static IEnumerable<string> Execute(string command) {
+            Debug.WriteLine(command);
+            return GitExecuter(command);
+        }
+
+        public static IEnumerable<GitStatusPath> Status() {
             return Execute("git status --porcelain")
-                .Select(l => new GitStatus(l[0].ToStatus(), l[1].ToStatus(), l.Substring(3)));
+                .Select(l => new GitStatusPath(l[0].ToStatus(), l[1].ToStatus(), l.Substring(3)));
         }
 
         public static IEnumerable<GitRemoteUrl> Remotes() {
-            var res = Execute("git remove -v");
+            var res = Execute("git remote -v");
             GitRemoteUrl current = null;
             foreach (var line in res) {
                 var parts = line.Split('\t');
@@ -125,8 +82,10 @@ namespace PowerCode {
                 yield return current;
         }
 
+
         public static IEnumerable<GitRemoteRef> RemoteRefs() {
             return Execute("git for-each-ref '--format=%(objectname) %(refname)' refs/remotes/*/*")
+                .Skip(1)
                 .Select(l => new GitRemoteRef(l.Substring(0, 40), l.Substring(41)));
         }
 
@@ -176,5 +135,6 @@ namespace PowerCode {
             return Execute($"git log --oneline -{count}").Select(l => new GitLog(l.Substring(0, 8), l.Substring(9)));
         }
 
+        //public static IEnumerable<GitRef> Branches
     }
 }

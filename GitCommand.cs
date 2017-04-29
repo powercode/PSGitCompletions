@@ -773,8 +773,7 @@ If ':<funcname>' is given in place of <start> and <end>, it is a regular express
                             @"Look for attributes in .gitattributes files in the working tree as well (see ATTRIBUTES).")
                     };
                 case "bisect":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "blame":
                     return new[] {
                         new GitCommandOption("--abbrev", @"--abbrev=<n>",
@@ -947,8 +946,7 @@ This behavior is the default when the start point is a remote-tracking branch. S
                             @"When in list mode, show sha1 and commit subject line for each head, along with relationship to upstream branch (if any). If given twice, print the name of the upstream branch, as well (see also git remote show <remote>).")
                     };
                 case "bundle":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "checkout":
                     return new[] {
                         new GitCommandOption("--[no-]progress", @"--[no-]progress",
@@ -1012,8 +1010,7 @@ This is because rebase is used in a workflow that treats the history at the remo
 If no -b option is given, the name of the new branch will be derived from the remote-tracking branch, by looking at the local part of the refspec configured for the corresponding remote, and then stripping the initial part up to the ""*"". This would tell us to use ""hack"" as the local branch when branching off of ""origin/hack"" (or ""remotes/origin/hack"", or even ""refs/remotes/origin/hack""). If the given name has no slash, or the above guessing results in an empty name, the guessing is aborted. You can explicitly give a name with -b in such a case.")
                     };
                 case "cherry":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "cherry-pick":
                     return new[] {
                         new GitCommandOption("--abort", @"--abort",
@@ -1064,8 +1061,7 @@ This is useful when cherry-picking more than one commits'' effect to your index 
                             @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details.")
                     };
                 case "citool":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "clean":
                     return new[] {
                         new GitCommandOption("-d", @"-d",
@@ -2097,8 +2093,7 @@ If the number of packs exceeds the value of gc.autoPackLimit, then existing pack
                             @"Output \\0 instead of the character that normally follows a file name.")
                     };
                 case "gui":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "help":
                     return new[] {
                         new GitCommandOption("-a", @"-a",
@@ -3253,8 +3248,7 @@ This computation involves traversing all the reachable objects, i.e. it has the 
                             @"Be a little more verbose and show remote url after name. NOTE: This must be placed between remote and subcommand.")
                     };
                 case "rerere":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "reset":
                     return new[] {
                         new GitCommandOption("--hard", @"--hard",
@@ -3598,8 +3592,7 @@ Also, when --raw or --numstat has been given, do not munge pathnames and use NUL
 Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred.")
                     };
                 case "stash":
-                    return new GitCommandOption[] {
-                    };
+                    return new GitCommandOption[] { };
                 case "status":
                     return new[] {
                         new GitCommandOption("-b", @"-b", @"Show the branch and tracking info even in short-format."),
