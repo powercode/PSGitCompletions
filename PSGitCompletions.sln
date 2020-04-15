@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSGitCompletions", "PSGitCompletions.csproj", "{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSGitCompletions", "src\PSGitCompletions\PSGitCompletions.csproj", "{4FF89148-2B63-43FA-A9BB-FF499F6BEDD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitCompletionTests", "GitCompletionTests\GitCompletionTests.csproj", "{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSGitCompletionsTests", "test\PSGitCompletionsTests\PSGitCompletionsTests.csproj", "{30C4FD3C-3221-4CBA-85B4-FD0D925B751E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
