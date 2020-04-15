@@ -39,8 +39,8 @@ namespace PowerCode
 
             if (previousParameterValue.IsGitCommand()) return CompleteGitCommands(wordToComplete: wordToComplete);
             var commandName = ast.CommandElements[1].Extent.Text;
-            var gitCommand = GitCommand.GetOptions(name: commandName);
-            return CompleteGitCommand(commandName: commandName, gitCommandOptions: gitCommand, previousParameterName: previousParameterName, previousParameterValue: previousParameterValue,
+            var gitCommandOptions = GitCommand.GetOptions(name: commandName);
+            return CompleteGitCommand(commandName: commandName, gitCommandOptions: gitCommandOptions, previousParameterName: previousParameterName, previousParameterValue: previousParameterValue,
                 wordToComplete: wordToComplete, afterDoubleDash: afterDoubleDash);
         }
 
@@ -50,13 +50,13 @@ namespace PowerCode
             switch (commandName)
             {
                 case "branch":
-                    if (!wordToComplete.StartsWith("-")) return CompleteBranches(wordToComplete: wordToComplete);
+                    if (!wordToComplete.StartsWith('-')) return CompleteBranches(wordToComplete: wordToComplete);
                     goto default;
                 case "checkout":
                     if (string.IsNullOrEmpty(value: previousParameterName) && !wordToComplete.StartsWith("-")) return CompleteBranches(wordToComplete: wordToComplete);
                     goto default;
                 case "fetch":
-                    if (!wordToComplete.StartsWith("-"))
+                    if (!wordToComplete.StartsWith('-'))
                     {
                         if (!string.IsNullOrEmpty(value: previousParameterValue) && previousParameterValue != commandName)
                             return Git.RemoteRefs()
@@ -79,7 +79,7 @@ namespace PowerCode
                         return Git.Log()
                             .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
                             .ToList();
-                    else if (!wordToComplete.StartsWith("-"))
+                    else if (!wordToComplete.StartsWith('-'))
                         return Git.Log()
                             .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseStartsWith(value: wordToComplete))
                             .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
