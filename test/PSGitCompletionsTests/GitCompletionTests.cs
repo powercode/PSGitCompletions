@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using PowerCode;
 using Xunit;
 
@@ -8,101 +6,7 @@ namespace GitCompletionTests
 {
     public class GitCompletionTests
     {
-        [Fact]
-        public void CanCompleteGitCommands()
-        {
-            var res = "git ".CompleteInput();
-            Assert.Equal("add", res[0].CompletionText);
-            var diff = res.FirstOrDefault(c => c.CompletionText == "diff");
-            Assert.NotNull(diff);
-        }
-
-        [Fact]
-        public void CanCompleteGitCommandPart()
-        {
-            var res = "git ad".CompleteInput("ad");
-            Assert.Equal("add", res[0].CompletionText);
-        }
-
-
-        [Fact]
-        public void CanCompleteGitCommandOptions()
-        {
-            var res = "git add ".CompleteInput();
-            Assert.Equal("--", res[0].CompletionText);
-            Assert.Equal("-A", res[1].CompletionText);
-            Assert.Equal("--all", res[2].CompletionText);
-        }
-
-        [Fact]
-        public void CanCompleteGitDiffOptions()
-        {
-            using (new GitExecuterScope(Git.GitExecuter))
-            {
-                Git.GitExecuter = GetGitLog;
-                var res = "git diff ".CompleteInput();
-                Assert.Equal("afcff36f", res[0].CompletionText);
-                Assert.Equal("Moving CurrentTypeDefinitionAst to TypeInferenceContext", res[4].ToolTip);
-            }
-        }
-
-        [Fact]
-        public void CanCompleteGetGitFetchRemoteRef()
-        {
-            using (new GitExecuterScope(Git.GitExecuter))
-            {
-                Git.GitExecuter = GetGitRemoteRefs;
-                var completions = "git fetch origin".CompleteInput();
-                Assert.Equal(3, completions.Count);
-                Assert.Equal("ForEach", completions[0].CompletionText);
-
-            }
-        }
-
-        [Fact]
-        public void CanCompleteGetGitFetchRemote()
-        {
-            using (new GitExecuterScope(Git.GitExecuter))
-            {
-                Git.GitExecuter = GetGitRemoteRefs;
-                var completions = "git fetch ".CompleteInput();
-                Assert.Equal(2, completions.Count);
-                Assert.Equal("upstream", completions[1].CompletionText);
-
-            }
-        }
-
-        [Fact]
-        public void CanGetGitRemoteRefs()
-        {
-            using (new GitExecuterScope(Git.GitExecuter))
-            {
-                Git.GitExecuter = GetGitRemoteRefs;
-                var remoteRefs = Git.RemoteRefs().ToArray();
-                Assert.Equal("ForEach", remoteRefs[0].Ref);
-                Assert.Equal("fea270412167ad3e4e5a5297642dcb7d5f9c51ee", remoteRefs[2].Commit);
-                Assert.Equal("origin", remoteRefs[1].Remote);
-                Assert.Equal("origin/ext-method", remoteRefs[2].RemoteRef);
-            }
-        }
-
-        [Fact]
-        public void CanGetGitRemoteUrls()
-        {
-            using (new GitExecuterScope(Git.GitExecuter))
-            {
-                Git.GitExecuter = GetGitRemoteurl;
-                var remoteRefs = Git.Remotes().ToArray();
-                Assert.Equal("origin", remoteRefs[0].Name);
-                Assert.Equal("https://github.com/powershell/PowerShell (fetch)", remoteRefs[1].FetchUrl);
-                Assert.Equal("https://github.com/powershell/PowerShell (fetch)", remoteRefs[1].FetchUrl);
-            }
-        }
-
-
-
-
-        string[] GetGitLog(string command)
+        private string[] GetGitLog(string command)
         {
             return new[]
             {
@@ -129,7 +33,7 @@ namespace GitCompletionTests
             };
         }
 
-        string[] GetGitRemoteRefs(string command)
+        private string[] GetGitRemoteRefs(string command)
         {
             return new[]
             {
@@ -138,11 +42,11 @@ namespace GitCompletionTests
                 "fea270412167ad3e4e5a5297642dcb7d5f9c51ee refs/remotes/origin/ext-method",
                 "5f308d5ea80699ee0379c341ed5de070ed49944c refs/remotes/upstream/ForEach",
                 "1c2c3a223f024371677846d2a8b5e4a6079e8cd7 refs/remotes/upstream/import-datafile",
-                "38f6dad857ee8a70a1d7b23c67f2af32ffe50d40 refs/remotes/upstream/make-csproj-build",
+                "38f6dad857ee8a70a1d7b23c67f2af32ffe50d40 refs/remotes/upstream/make-csproj-build"
             };
         }
 
-        string[] GetGitRemoteurl(string command)
+        private string[] GetGitRemoteUrl(string command)
         {
             return new[]
             {
@@ -153,5 +57,85 @@ namespace GitCompletionTests
             };
         }
 
+        [Fact]
+        public void CanCompleteGetGitFetchRemote()
+        {
+            using var scope = new GitExecuterScope(executer: Git.GitExecuter);
+            Git.GitExecuter = GetGitRemoteRefs;
+            var completions = "git fetch ".CompleteInput();
+            Assert.Equal(2, actual: completions.Count);
+            Assert.Equal("upstream", actual: completions[1].CompletionText);
+        }
+
+        [Fact]
+        public void CanCompleteGetGitFetchRemoteRef()
+        {
+            using var scope = new GitExecuterScope(executer: Git.GitExecuter);
+            Git.GitExecuter = GetGitRemoteRefs;
+            var completions = "git fetch origin".CompleteInput();
+            Assert.Equal(3, actual: completions.Count);
+            Assert.Equal("ForEach", actual: completions[0].CompletionText);
+        }
+
+
+        [Fact]
+        public void CanCompleteGitCommandOptions()
+        {
+            var res = "git add ".CompleteInput();
+            Assert.Equal("--", actual: res[0].CompletionText);
+            Assert.Equal("-A", actual: res[1].CompletionText);
+            Assert.Equal("--all", actual: res[2].CompletionText);
+        }
+
+        [Fact]
+        public void CanCompleteGitCommandPart()
+        {
+            var res = "git ad".CompleteInput("ad");
+            Assert.Equal("add", actual: res[0].CompletionText);
+        }
+
+        [Fact]
+        public void CanCompleteGitCommands()
+        {
+            var res = "git ".CompleteInput();
+            Assert.Equal("add", actual: res[0].CompletionText);
+            var diff = res.FirstOrDefault(c => c.CompletionText == "diff");
+            Assert.NotNull(@object: diff);
+        }
+
+        [Fact]
+        public void CanCompleteGitDiffOptions()
+        {
+            using var scope = new GitExecuterScope(executer: Git.GitExecuter);
+            Git.GitExecuter = GetGitLog;
+            var res = "git diff ".CompleteInput();
+            Assert.Equal("afcff36f", actual: res[0].CompletionText);
+            Assert.Equal("Moving CurrentTypeDefinitionAst to TypeInferenceContext", actual: res[4].ToolTip);
+        }
+
+        [Fact]
+        public void CanGetGitRemoteRefs()
+        {
+            using var scope = new GitExecuterScope(executer: Git.GitExecuter);
+            Git.GitExecuter = GetGitRemoteRefs;
+            var remoteRefs = Git.RemoteRefs().ToArray();
+            Assert.Equal("ForEach", actual: remoteRefs[0].Ref);
+            Assert.Equal("fea270412167ad3e4e5a5297642dcb7d5f9c51ee", actual: remoteRefs[2].Commit);
+            Assert.Equal("origin", actual: remoteRefs[1].Remote);
+            Assert.Equal("origin/ext-method", actual: remoteRefs[2].RemoteRef);
+        }
+
+        [Fact]
+        public void CanGetGitRemoteUrls()
+        {
+            using (new GitExecuterScope(executer: Git.GitExecuter))
+            {
+                Git.GitExecuter = GetGitRemoteUrl;
+                var remoteRefs = Git.Remotes().ToArray();
+                Assert.Equal("origin", actual: remoteRefs[0].Name);
+                Assert.Equal("https://github.com/powershell/PowerShell (fetch)", actual: remoteRefs[1].FetchUrl);
+                Assert.Equal("https://github.com/powershell/PowerShell (fetch)", actual: remoteRefs[1].FetchUrl);
+            }
+        }
     }
 }

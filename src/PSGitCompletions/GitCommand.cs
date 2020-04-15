@@ -2,6 +2,474 @@
 {
     public class GitCommand
     {
+        public static GitCommand[] Commands =
+        {
+            #region Commands
+
+            new GitCommand("add",
+                "Add file contents to the index",
+                @"git add [--verbose | -v] [--dry-run | -n] [--force | -f] [--interactive | -i] [--patch | -p]
+	  [--edit | -e] [--[no-]all | --[no-]ignore-removal | [--update | -u]]
+	  [--intent-to-add | -N] [--refresh] [--ignore-errors] [--ignore-missing]
+	  [--chmod=(+|-)x] [--] [<pathspec>...]",
+                @"This command updates the index using the current content found in the working tree, to prepare the content staged for the next commit. It typically adds the current content of existing paths as a whole, but with some options it can also be used to add content with only part of the changes made to the working tree files applied, or remove paths that do not exist in the working tree anymor"),
+            new GitCommand("am",
+                "Apply a series of patches from a mailbox",
+                @"git am [--signoff] [--keep] [--[no-]keep-cr] [--[no-]utf8]
+	 [--[no-]3way] [--interactive] [--committer-date-is-author-date]
+	 [--ignore-date] [--ignore-space-change | --ignore-whitespace]
+	 [--whitespace=<option>] [-C<n>] [-p<n>] [--directory=<dir>]
+	 [--exclude=<path>] [--include=<path>] [--reject] [-q | --quiet]
+	 [--[no-]scissors] [-S[<keyid>]] [--patch-format=<format>]
+	 [(<mbox> | <Maildir>)...]
+git am (--continue | --skip | --abort)",
+                @"Splits mail messages in a mailbox into commit log message, authorship information and patches, and applies them to the current branch."),
+            new GitCommand("annotate",
+                "Annotate file lines with commit information",
+                @"git annotate [options] file [revision]",
+                @"Annotates each line in the given file with information from the commit which introduced the line. Optionally annotates from a given revision.
+
+
+The only difference between this command and git-blame[1] is that they use slightly different output formats, and this command exists only for backward compatibility to support existing scripts, and provide a more familiar command name for people coming from other SCM systems."),
+            new GitCommand("archive",
+                "Create an archive of files from a named tree",
+                @"git archive [--format=<fmt>] [--list] [--prefix=<prefix>/] [<extra>]
+	      [-o <file> | --output=<file>] [--worktree-attributes]
+	      [--remote=<repo> [--exec=<git-upload-archive>]] <tree-ish>
+	      [<path>...]",
+                @"Creates an archive of the specified format containing the tree structure for the named tree, and writes it out to the standard output. If <prefix> is specified it is prepended to the filenames in the archiv"),
+            new GitCommand("bisect",
+                "Use binary search to find the commit that introduced a bug",
+                @"git bisect <subcommand> <options>",
+                @"The command takes various subcommands, and different options depending on the subcommand:
+
+
+git bisect start [--term-{old,good}=<term> --term-{new,bad}=<term>]
+	  [--no-checkout] [<bad> [<good>...]] [--] [<paths>.."),
+            new GitCommand("blame",
+                "Show what revision and author last modified each line of a file",
+                @"git blame [-c] [-b] [-l] [--root] [-t] [-f] [-n] [-s] [-e] [-p] [-w] [--incremental]
+	    [-L <range>] [-S <revs-file>] [-M] [-C] [-C] [-C] [--since=<date>]
+	    [--progress] [--abbrev=<n>] [<rev> | --contents <file> | --reverse <rev>..<rev>]
+	    [--] <file>",
+                @"Annotates each line in the given file with information from the revision which last modified the line. Optionally, start annotating from the given revision.
+
+
+When specified one or more times, -L restricts annotation to the requested line"),
+            new GitCommand("branch",
+                "List, create, or delete branches",
+                @"git branch [--color[=<when>] | --no-color] [-r | -a]
+	[--list] [-v [--abbrev=<length> | --no-abbrev]]
+	[--column[=<options>] | --no-column]
+	[(--merged | --no-merged | --contains) [<commit>]] [--sort=<key>]
+	[--points-at <object>] [<pattern>...]
+git branch [--set-upstream | --track | --no-track] [-l] [-f] <branchname> [<start-point>]
+git branch (--set-upstream-to=<upstream> | -u <upstream>) [<branchname>]
+git branch --unset-upstream [<branchname>]
+git branch (-m | -M) [<oldbranch>] <newbranch>
+git branch (-d | -D) [-r] <branchname>...
+git branch --edit-description [<branchname>]",
+                @"If --list is given, or if there are no non-option arguments, existing branches are listed; the current branch will be highlighted with an asterisk. Option -r causes the remote-tracking branches to be listed, and option -a shows both local and remote branches. If a <pattern> is given, it is used as a shell wildcard to restrict the output to matching branches. If multiple patterns are given, a branch is shown if it matches any of the patterns. Note that when providing a <pattern>, you must use --list; otherwise the command is interpreted as branch creatio"),
+            new GitCommand("bundle",
+                "Move objects and refs by archive",
+                @"git bundle create <file> <git-rev-list-args>
+git bundle verify <file>
+git bundle list-heads <file> [<refname>...]
+git bundle unbundle <file> [<refname>...]",
+                @"Some workflows require that one or more branches of development on one machine be replicated on another machine, but the two machines cannot be directly connected, and therefore the interactive Git protocols (git, ssh, http) cannot be used. This command provides support for git fetch and git pull to operate by packaging objects and references in an archive at the originating machine, then importing those into another repository using git fetch and git pull after moving the archive by some means (e.g., by sneakernet). As no direct connection between the repositories exists, the user must specify a basis for the bundle that is held by the destination repository: the bundle assumes that all objects in the basis are already in the destination repository."),
+            new GitCommand("checkout",
+                "Switch branches or restore working tree files",
+                @"git checkout [-q] [-f] [-m] [<branch>]
+git checkout [-q] [-f] [-m] --detach [<branch>]
+git checkout [-q] [-f] [-m] [--detach] <commit>
+git checkout [-q] [-f] [-m] [[-b|-B|--orphan] <new_branch>] [<start_point>]
+git checkout [-f|--ours|--theirs|-m|--conflict=<style>] [<tree-ish>] [--] <paths>...
+git checkout [-p|--patch] [<tree-ish>] [--] [<paths>...]",
+                @"Updates files in the working tree to match the version in the index or the specified tree. If no paths are given, git checkout will also update HEAD to set the specified branch as the current branch."),
+            new GitCommand("cherry",
+                "Find commits yet to be applied to upstream",
+                @"git cherry [-v] [<upstream> [<head> [<limit>]]]",
+                @"Determine whether there are commits in <head>..<upstream> that are equivalent to those in the range <limit>..<head>.
+
+
+The equivalence test is based on the diff, after removing whitespace and line numbers. git-cherry therefore detects when commits have been ""copied"" by means of git-cherry-pick[1], git-am[1] or git-rebase[1"),
+            new GitCommand("cherry-pick",
+                "Apply the changes introduced by some existing commits",
+                @"git cherry-pick [--edit] [-n] [-m parent-number] [-s] [-x] [--ff]
+		  [-S[<keyid>]] <commit>...
+git cherry-pick --continue
+git cherry-pick --quit
+git cherry-pick --abort",
+                @"Given one or more existing commits, apply the change each one introduces, recording a new commit for each. This requires your working tree to be clean (no modifications from the HEAD commit).
+
+
+When it is not obvious how to apply a change, the following happen"),
+            new GitCommand("citool",
+                "Graphical alternative to git-commit",
+                @"git citool",
+                @"A Tcl/Tk based graphical interface to review modified files, stage them into the index, enter a commit message and record the new commit onto the current branch. This interface is an alternative to the less interactive git commit progra"),
+            new GitCommand("clean",
+                "Remove untracked files from the working tree",
+                @"git clean [-d] [-f] [-i] [-n] [-q] [-e <pattern>] [-x | -X] [--] <path>...",
+                @"Cleans the working tree by recursively removing files that are not under version control, starting from the current directory.
+
+
+Normally, only files unknown to Git are removed, but if the -x option is specified, ignored files are also removed. This can, for example, be useful to remove all build product"),
+            new GitCommand("clone",
+                "Clone a repository into a new directory",
+                @"git clone [--template=<template_directory>]
+	  [-l] [-s] [--no-hardlinks] [-q] [-n] [--bare] [--mirror]
+	  [-o <name>] [-b <name>] [-u <upload-pack>] [--reference <repository>]
+	  [--dissociate] [--separate-git-dir <git dir>]
+	  [--depth <depth>] [--[no-]single-branch]
+	  [--recursive | --recurse-submodules] [--[no-]shallow-submodules]
+	  [--jobs <n>] [--] <repository> [<directory>]",
+                @"Clones a repository into a newly created directory, creates remote-tracking branches for each branch in the cloned repository (visible using git branch -r), and creates and checks out an initial branch that is forked from the cloned repository''s currently active branc"),
+            new GitCommand("commit",
+                "Record changes to the repository",
+                @"git commit [-a | --interactive | --patch] [-s] [-v] [-u<mode>] [--amend]
+	   [--dry-run] [(-c | -C | --fixup | --squash) <commit>]
+	   [-F <file> | -m <msg>] [--reset-author] [--allow-empty]
+	   [--allow-empty-message] [--no-verify] [-e] [--author=<author>]
+	   [--date=<date>] [--cleanup=<mode>] [--[no-]status]
+	   [-i | -o] [-S[<keyid>]] [--] [<file>...]",
+                @"Stores the current contents of the index in a new commit along with a log message from the user describing the changes.
+
+
+The content to be added can be specified in several ways:
+
+
+by using git add to incrementally ""add"" changes to the index before using the commit command (Note: even modified files must be ""added"""),
+            new GitCommand("config",
+                "Get and set repository or global options",
+                @"git config [<file-option>] [type] [--show-origin] [-z|--null] name [value [value_regex]]
+git config [<file-option>] [type] --add name value
+git config [<file-option>] [type] --replace-all name value [value_regex]
+git config [<file-option>] [type] [--show-origin] [-z|--null] --get name [value_regex]
+git config [<file-option>] [type] [--show-origin] [-z|--null] --get-all name [value_regex]
+git config [<file-option>] [type] [--show-origin] [-z|--null] [--name-only] --get-regexp name_regex [value_regex]
+git config [<file-option>] [type] [-z|--null] --get-urlmatch name URL
+git config [<file-option>] --unset name [value_regex]
+git config [<file-option>] --unset-all name [value_regex]
+git config [<file-option>] --rename-section old_name new_name
+git config [<file-option>] --remove-section name
+git config [<file-option>] [--show-origin] [-z|--null] [--name-only] -l | --list
+git config [<file-option>] --get-color name [default]
+git config [<file-option>] --get-colorbool name [stdout-is-tty]
+git config [<file-option>] -e | --edit",
+                @"You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
+
+
+Multiple lines can be added to an option by using the --add option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do not match the regex, just prepend a single exclamation mark in front (see also EXAMPLES"),
+            new GitCommand("describe",
+                "Describe a commit using the most recent tag reachable from it",
+                @"git describe [--all] [--tags] [--contains] [--abbrev=<n>] [<commit-ish>...]
+git describe [--all] [--tags] [--contains] [--abbrev=<n>] --dirty[=<mark>]",
+                @"The command finds the most recent tag that is reachable from a commit. If the tag points to the commit, then only the tag is shown. Otherwise, it suffixes the tag name with the number of additional commits on top of the tagged object and the abbreviated object name of the most recent commi"),
+            new GitCommand("diff",
+                "Show changes between commits, commit and working tree, etc",
+                @"git diff [options] [<commit>] [--] [<path>...]
+git diff [options] --cached [<commit>] [--] [<path>...]
+git diff [options] <commit> <commit> [--] [<path>...]
+git diff [options] <blob> <blob>
+git diff [options] [--no-index] [--] <path> <path>",
+                @"Show changes between the working tree and the index or a tree, changes between the index and a tree, changes between two trees, changes between two blob objects, or changes between two files on disk."),
+            new GitCommand("difftool",
+                "Show changes using common diff tools",
+                @"git difftool [<options>] [<commit> [<commit>]] [--] [<path>...]",
+                @"git difftool is a Git command that allows you to compare and edit files between revisions using common diff tools. git difftool is a frontend to git diff and accepts the same options and arguments. See git-diff[1]."),
+            new GitCommand("fetch",
+                "Download objects and refs from another repository",
+                @"git fetch [<options>] [<repository> [<refspec>...]]
+git fetch [<options>] <group>
+git fetch --multiple [<options>] [(<repository> | <group>)...]
+git fetch --all [<options>]",
+                @"Fetch branches and/or tags (collectively, ""refs"") from one or more other repositories, along with the objects necessary to complete their histories. Remote-tracking branches are updated (see the description of <refspec> below for ways to control this behavior"),
+            new GitCommand("format-patch",
+                "Prepare patches for e-mail submission",
+                @"git format-patch [-k] [(-o|--output-directory) <dir> | --stdout]
+		   [--no-thread | --thread[=<style>]]
+		   [(--attach|--inline)[=<boundary>] | --no-attach]
+		   [-s | --signoff]
+		   [--signature=<signature> | --no-signature]
+		   [--signature-file=<file>]
+		   [-n | --numbered | -N | --no-numbered]
+		   [--start-number <n>] [--numbered-files]
+		   [--in-reply-to=Message-Id] [--suffix=.<sfx>]
+		   [--ignore-if-in-upstream]
+		   [--rfc] [--subject-prefix=Subject-Prefix]
+		   [(--reroll-count|-v) <n>]
+		   [--to=<email>] [--cc=<email>]
+		   [--[no-]cover-letter] [--quiet] [--notes[=<ref>]]
+		   [<common diff options>]
+		   [ <since> | <revision range> ]",
+                @"Prepare each commit with its patch in one file per commit, formatted to resemble UNIX mailbox format. The output of this command is convenient for e-mail submission or for use with git am.
+
+
+There are two ways to specify which commits to operate o"),
+            new GitCommand("gc",
+                "Cleanup unnecessary files and optimize the local repository",
+                @"git gc [--aggressive] [--auto] [--quiet] [--prune=<date> | --no-prune] [--force]",
+                @"Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance) and removing unreachable objects which may have been created from prior invocations of git ad"),
+            new GitCommand("grep",
+                "Print lines matching a pattern",
+                @"git grep [-a | --text] [-I] [--textconv] [-i | --ignore-case] [-w | --word-regexp]
+	   [-v | --invert-match] [-h|-H] [--full-name]
+	   [-E | --extended-regexp] [-G | --basic-regexp]
+	   [-P | --perl-regexp]
+	   [-F | --fixed-strings] [-n | --line-number]
+	   [-l | --files-with-matches] [-L | --files-without-match]
+	   [(-O | --open-files-in-pager) [<pager>]]
+	   [-z | --null]
+	   [-c | --count] [--all-match] [-q | --quiet]
+	   [--max-depth <depth>]
+	   [--color[=<when>] | --no-color]
+	   [--break] [--heading] [-p | --show-function]
+	   [-A <post-context>] [-B <pre-context>] [-C <context>]
+	   [-W | --function-context]
+	   [--threads <num>]
+	   [-f <file>] [-e] <pattern>
+	   [--and|--or|--not|(|)|-e <pattern>...]
+	   [ [--[no-]exclude-standard] [--cached | --no-index | --untracked] | <tree>...]
+	   [--] [<pathspec>...]",
+                @"Look for specified patterns in the tracked files in the work tree, blobs registered in the index file, or blobs in given tree objects. Patterns are lists of one or more search expressions separated by newline characters. An empty string as search expression matches all lines."),
+            new GitCommand("gui",
+                "A portable graphical interface to Git",
+                @"git gui [<command>] [arguments]",
+                @"A Tcl/Tk based graphical user interface to Git. git gui focuses on allowing users to make changes to their repository by making new commits, amending existing ones, creating branches, performing local merges, and fetching/pushing to remote repositorie"),
+            new GitCommand("help",
+                "Display help information about Git",
+                @"git help [-a|--all] [-g|--guide]
+	   [-i|--info|-m|--man|-w|--web] [COMMAND|GUIDE]",
+                @"With no options and no COMMAND or GUIDE given, the synopsis of the git command and a list of the most commonly used Git commands are printed on the standard output.
+
+
+If the option --all or -a is given, all available commands are printed on the standard outpu"),
+            new GitCommand("init",
+                "Create an empty Git repository or reinitialize an existing one",
+                @"git init [-q | --quiet] [--bare] [--template=<template_directory>]
+	  [--separate-git-dir <git dir>]
+	  [--shared[=<permissions>]] [directory]",
+                @"This command creates an empty Git repository - basically a .git directory with subdirectories for objects, refs/heads, refs/tags, and template files. An initial HEAD file that references the HEAD of the master branch is also create"),
+            new GitCommand("instaweb",
+                "Instantly browse your working repository in gitweb",
+                @"git instaweb [--local] [--httpd=<httpd>] [--port=<port>]
+               [--browser=<browser>]
+git instaweb [--start] [--stop] [--restart]",
+                @"A simple script to set up gitweb and a web server for browsing the local repository."),
+            new GitCommand("log",
+                "Show commit logs",
+                @"git log [<options>] [<revision range>] [[\--] <path>...]",
+                @"Shows the commit logs.
+
+
+The command takes options applicable to the git rev-list command to control what is shown and how, and options applicable to the git diff-* commands to control how the changes each commit introduces are shown."),
+            new GitCommand("merge",
+                "Join two or more development histories together",
+                @"git merge [-n] [--stat] [--no-commit] [--squash] [--[no-]edit]
+	[-s <strategy>] [-X <strategy-option>] [-S[<keyid>]]
+	[--[no-]allow-unrelated-histories]
+	[--[no-]rerere-autoupdate] [-m <msg>] [<commit>...]
+git merge <msg> HEAD <commit>...
+git merge --abort",
+                @"Incorporates changes from the named commits (since the time their histories diverged from the current branch) into the current branch. This command is used by git pull to incorporate changes from another repository and can be used by hand to merge changes from one branch into anothe"),
+            new GitCommand("mergetool",
+                "Run merge conflict resolution tools to resolve merge conflicts",
+                @"git mergetool [--tool=<tool>] [-y | --[no-]prompt] [<file>...]",
+                @"Use git mergetool to run one of several merge utilities to resolve merge conflicts. It is typically run after git merge.
+
+
+If one or more <file> parameters are given, the merge tool program will be run to resolve differences on each file (skipping those without conflicts). Specifying a directory will include all unresolved files in that path. If no <file> names are specified, git mergetool will run the merge tool program on every file with merge conflicts."),
+            new GitCommand("mv",
+                "Move or rename a file, a directory, or a symlink",
+                @"git mv <options>... <args>...",
+                @"Move or rename a file, directory or symlink.
+
+
+git mv [-v] [-f] [-n] [-k] <source> <destination>
+git mv [-v] [-f] [-n] [-k] <source> ... <destination directory>
+
+
+In the first form, it renames <source>, which must exist and be either a file, symlink or directory, to <destination>. In the second form, the last argument has to be an existing directory; the given sources will be moved into this director"),
+            new GitCommand("notes",
+                "Add or inspect object notes",
+                @"git notes [list [<object>]]
+git notes add [-f] [--allow-empty] [-F <file> | -m <msg> | (-c | -C) <object>] [<object>]
+git notes copy [-f] ( --stdin | <from-object> <to-object> )
+git notes append [--allow-empty] [-F <file> | -m <msg> | (-c | -C) <object>] [<object>]
+git notes edit [--allow-empty] [<object>]
+git notes show [<object>]
+git notes merge [-v | -q] [-s <strategy> ] <notes-ref>
+git notes merge --commit [-v | -q]
+git notes merge --abort [-v | -q]
+git notes remove [--ignore-missing] [--stdin] [<object>...]
+git notes prune [-n | -v]
+git notes get-ref",
+                @"Adds, removes, or reads notes attached to objects, without touching the objects themselves.
+
+
+By default, notes are saved to and read from refs/notes/commits, but this default can be overridden. See the OPTIONS, CONFIGURATION, and ENVIRONMENT sections below. If this ref does not exist, it will be quietly created when it is first needed to store a not"),
+            new GitCommand("prune",
+                "Prune all unreachable objects from the object database",
+                @"git prune [-n] [-v] [--expire <expire>] [--] [<head>...]",
+                @"Note
+In most cases, users should run git gc, which calls git prune. See the section ""NOTES"", below.
+
+
+This runs git fsck --unreachable using all the refs available in refs/, optionally with additional set of objects specified on the command line, and prunes all unpacked objects unreachable from any of these head objects from the object database. In addition, it prunes the unpacked objects that are also found in packs by running git prune-packed. It also removes entries from .git/shallow that are not reachable by any re"),
+            new GitCommand("pull",
+                "Fetch from and integrate with another repository or a local branch",
+                @"git pull [options] [<repository> [<refspec>...]]",
+                @"Incorporates changes from a remote repository into the current branch. In its default mode, git pull is shorthand for git fetch followed by git merge FETCH_HEAD.
+
+
+More precisely, git pull runs git fetch with the given parameters and calls git merge to merge the retrieved branch heads into the current branch. With --rebase, it runs git rebase instead of git merg"),
+            new GitCommand("push",
+                "Update remote refs along with associated objects",
+                @"git push [--all | --mirror | --tags] [--follow-tags] [--atomic] [-n | --dry-run] [--receive-pack=<git-receive-pack>]
+	   [--repo=<repository>] [-f | --force] [-d | --delete] [--prune] [-v | --verbose]
+	   [-u | --set-upstream] [--push-option=<string>]
+	   [--[no-]signed|--sign=(true|false|if-asked)]
+	   [--force-with-lease[=<refname>[:<expect>]]]
+	   [--no-verify] [<repository> [<refspec>...]]",
+                @"Updates remote refs using local refs, while sending objects necessary to complete the given refs.
+
+
+You can make interesting things happen to a repository every time you push into it, by setting up hooks there. See documentation for git-receive-pack[1"),
+            new GitCommand("rebase",
+                "Reapply commits on top of another base tip",
+                @"git rebase [-i | --interactive] [options] [--exec <cmd>] [--onto <newbase>]
+	[<upstream> [<branch>]]
+git rebase [-i | --interactive] [options] [--exec <cmd>] [--onto <newbase>]
+	--root [<branch>]
+git rebase --continue | --skip | --abort | --edit-todo",
+                @"If <branch> is specified, git rebase will perform an automatic git checkout <branch> before doing anything else. Otherwise it remains on the current branch.
+
+
+If <upstream> is not specified, the upstream configured in branch.<name>.remote and branch.<name>.merge options will be used (see git-config[1] for details) and the --fork-point option is assumed. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abor"),
+            new GitCommand("reflog",
+                "Manage reflog information",
+                @"git reflog <subcommand> <options>",
+                @"The command takes various subcommands, and different options depending on the subcommand:
+
+git reflog [show] [log-options] [<ref>]
+git reflog expire [--expire=<time>] [--expire-unreachable=<time>]
+	[--rewrite] [--updateref] [--stale-fi"),
+            new GitCommand("remote",
+                "Manage set of tracked repositories",
+                @"git remote [-v | --verbose]
+git remote add [-t <branch>] [-m <master>] [-f] [--[no-]tags] [--mirror=<fetch|push>] <name> <url>
+git remote rename <old> <new>
+git remote remove <name>
+git remote set-head <name> (-a | --auto | -d | --delete | <branch>)
+git remote set-branches [--add] <name> <branch>...
+git remote get-url [--push] [--all] <name>
+git remote set-url [--push] <name> <newurl> [<oldurl>]
+git remote set-url --add [--push] <name> <newurl>
+git remote set-url --delete [--push] <name> <url>
+git remote [-v | --verbose] show [-n] <name>...
+git remote prune [-n | --dry-run] <name>...
+git remote [-v | --verbose] update [-p | --prune] [(<group> | <remote>)...]",
+                @"Manage the set of repositories (""remotes"") whose branches you track."),
+            new GitCommand("rerere",
+                "Reuse recorded resolution of conflicted merges",
+                @"git rerere [clear|forget <pathspec>|diff|remaining|status|gc]",
+                @"In a workflow employing relatively long lived topic branches, the developer sometimes needs to resolve the same conflicts over and over again until the topic branches are done (either merged to the ""release"" branch, or sent out and accepted upstream"),
+            new GitCommand("reset",
+                "Reset current HEAD to the specified state",
+                @"git reset [-q] [<tree-ish>] [--] <paths>...
+git reset (--patch | -p) [<tree-ish>] [--] [<paths>...]
+git reset [--soft | --mixed [-N] | --hard | --merge | --keep] [-q] [<commit>]",
+                @"In the first and second form, copy entries from <tree-ish> to the index. In the third form, set the current branch head (HEAD) to <commit>, optionally modifying index and working tree to match. The <tree-ish>/<commit> defaults to HEAD in all form"),
+            new GitCommand("revert",
+                "Revert some existing commits",
+                @"git revert [--[no-]edit] [-n] [-m parent-number] [-s] [-S[<keyid>]] <commit>...
+git revert --continue
+git revert --quit
+git revert --abort",
+                @"Given one or more existing commits, revert the changes that the related patches introduce, and record some new commits that record them. This requires your working tree to be clean (no modifications from the HEAD commit"),
+            new GitCommand("rm",
+                "Remove files from the working tree and from the index",
+                @"git rm [-f | --force] [-n] [-r] [--cached] [--ignore-unmatch] [--quiet] [--] <file>...",
+                @"Remove files from the index, or from the working tree and the index. git rm will not remove a file from just your working directory. (There is no option to remove a file only from the working tree and yet keep it in the index; use /bin/rm if you want to do that.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the -f option. When --cached is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index."),
+            new GitCommand("shortlog",
+                "Summarize git log output",
+                @"git log --pretty=short | git shortlog [<options>]
+git shortlog [<options>] [<revision range>] [[\--] <path>...]",
+                @"Summarizes git log output in a format suitable for inclusion in release announcements. Each commit will be grouped by author and title.
+
+
+Additionally, ""[PATCH]"" will be stripped from the commit descriptio"),
+            new GitCommand("show",
+                "Show various types of objects",
+                @"git show [options] <object>...",
+                @"Shows one or more objects (blobs, trees, tags and commits).
+
+
+For commits it shows the log message and textual diff. It also presents the merge commit in a special format as produced by git diff-tree --c"),
+            new GitCommand("stash",
+                "Stash the changes in a dirty working directory away",
+                @"git stash list [<options>]
+git stash show [<stash>]
+git stash drop [-q|--quiet] [<stash>]
+git stash ( pop | apply ) [--index] [-q|--quiet] [<stash>]
+git stash branch <branchname> [<stash>]
+git stash [save [-p|--patch] [-k|--[no-]keep-index] [-q|--quiet]
+	     [-u|--include-untracked] [-a|--all] [<message>]]
+git stash clear
+git stash create [<message>]
+git stash store [-m|--message <message>] [-q|--quiet] <commit>",
+                @"Use git stash when you want to record the current state of the working directory and the index, but want to go back to a clean working directory. The command saves your local modifications away and reverts the working directory to match the HEAD commi"),
+            new GitCommand("status",
+                "Show the working tree status",
+                @"git status [<options>...] [--] [<pathspec>...]",
+                @"Displays paths that have differences between the index file and the current HEAD commit, paths that have differences between the working tree and the index file, and paths in the working tree that are not tracked by Git (and are not ignored by gitignore[5]). The first are what you would commit by running git commit; the second and third are what you could commit by running git add before running git commit."),
+            new GitCommand("submodule",
+                "Initialize, update or inspect submodules",
+                @"git submodule [--quiet] add [-b <branch>] [-f|--force] [--name <name>]
+	      [--reference <repository>] [--depth <depth>] [--] <repository> [<path>]
+git submodule [--quiet] status [--cached] [--recursive] [--] [<path>...]
+git submodule [--quiet] init [--] [<path>...]
+git submodule [--quiet] deinit [-f|--force] (--all|[--] <path>...)
+git submodule [--quiet] update [--init] [--remote] [-N|--no-fetch]
+	      [--[no-]recommend-shallow] [-f|--force] [--rebase|--merge]
+	      [--reference <repository>] [--depth <depth>] [--recursive]
+	      [--jobs <n>] [--] [<path>...]
+git submodule [--quiet] summary [--cached|--files] [(-n|--summary-limit) <n>]
+	      [commit] [--] [<path>...]
+git submodule [--quiet] foreach [--recursive] <command>
+git submodule [--quiet] sync [--recursive] [--] [<path>...]",
+                @"Inspects, updates and manages submodules.
+
+
+A submodule allows you to keep another Git repository in a subdirectory of your repository. The other repository has its own history, which does not interfere with the history of the current repository. This can be used to have external dependencies such as third party libraries for exampl"),
+            new GitCommand("svn",
+                "Bidirectional operation between a Subversion repository and Git",
+                @"git svn <command> [options] [arguments]",
+                @"git svn is a simple conduit for changesets between Subversion and Git. It provides a bidirectional flow of changes between a Subversion and a Git repository.
+
+
+git svn can track a standard Subversion repository, following the common ""trunk/branches/tags"" layout, with the --stdlayout option. It can also follow branches and tags in any layout with the -T/-t/-b options (see options to init below, and also the clone command"),
+            new GitCommand("tag",
+                "Create, list, delete or verify a tag object signed with GPG",
+                @"git tag [-a | -s | -u <keyid>] [-f] [-m <msg> | -F <file>]
+	<tagname> [<commit> | <object>]
+git tag -d <tagname>...
+git tag [-n[<num>]] -l [--contains <commit>] [--points-at <object>]
+	[--column[=<options>] | --no-column] [--create-reflog] [--sort=<key>]
+	[--format=<format>] [--[no-]merged [<commit>]] [<pattern>...]
+git tag -v <tagname>...",
+                @"Add a tag reference in refs/tags/, unless -d/-l/-v is given to delete, list or verify tags.
+
+
+Unless -f is given, the named tag must not yet exist.
+
+
+If one of -a, -s, or -u <keyid> is passed, the command creates a tag object, and requires a tag message. Unless -m <msg> or -F <file> is given, an editor is started for the user to type in the tag messag"),
+
+            #endregion
+        };
+
         public string Name { get; }
         public string CommandDesc { get; }
 
@@ -73,7 +541,7 @@ If no <pathspec> is given when -u option is used, all tracked files in the entir
                     new GitCommandOption("--update", @"--update",
                         @"Update the index just where it already has an entry matching <pathspec>. This removes as well as modifies index entries to match the working tree, but adds no new files.
 If no <pathspec> is given when -u option is used, all tracked files in the entire working tree are updated (old versions of Git used to limit the update to the current directory and its subdirectories)."),
-                    new GitCommandOption("-v", @"-v", @"Be verbose."), new GitCommandOption("--verbose", @"--verbose", @"Be verbose."),
+                    new GitCommandOption("-v", @"-v", @"Be verbose."), new GitCommandOption("--verbose", @"--verbose", @"Be verbose.")
                 },
                 "am" => new[]
                 {
@@ -140,7 +608,7 @@ This was optional in prior versions of git, but now it is the default. You can u
                     new GitCommandOption("--utf8", @"--utf8",
                         @"Pass -u flag to git mailinfo (see git-mailinfo[1]). The proposed commit log message taken from the e-mail is re-coded into UTF-8 encoding (configuration variable i18n.commitencoding can be used to specify project''s preferred encoding if it is not UTF-8).
 This was optional in prior versions of git, but now it is the default. You can use --no-utf8 to override this."),
-                    new GitCommandOption("--whitespace", @"--whitespace=<option>", @"These flags are passed to the git apply (see git-apply[1]) program that applies the patch."),
+                    new GitCommandOption("--whitespace", @"--whitespace=<option>", @"These flags are passed to the git apply (see git-apply[1]) program that applies the patch.")
                 },
                 "annotate" => new[]
                 {
@@ -201,7 +669,7 @@ If ':<funcname>' is given in place of <start> and <end>, it is a regular express
                     new GitCommandOption("--root", @"--root", @"Do not treat root commits as boundaries. This can also be controlled via the blame.showRoot config option."),
                     new GitCommandOption("-S", @"-S <revs-file>", @"Use revisions from revs-file instead of calling git-rev-list[1]."),
                     new GitCommandOption("--show-stats", @"--show-stats", @"Include additional statistics at the end of blame output."),
-                    new GitCommandOption("-t", @"-t", @"Show raw timestamp (Default: off)."),
+                    new GitCommandOption("-t", @"-t", @"Show raw timestamp (Default: off).")
                 },
                 "archive" => new[]
                 {
@@ -217,7 +685,7 @@ If ':<funcname>' is given in place of <start> and <end>, it is a regular express
                     new GitCommandOption("--remote", @"--remote=<repo>",
                         @"Instead of making a tar archive from the local repository, retrieve a tar archive from a remote repository. Note that the remote repository may place restrictions on which sha1 expressions may be allowed in <tree-ish>. See git-upload-archive[1] for details."),
                     new GitCommandOption("-v", @"-v", @"Report progress to stderr."), new GitCommandOption("--verbose", @"--verbose", @"Report progress to stderr."),
-                    new GitCommandOption("--worktree-attributes", @"--worktree-attributes", @"Look for attributes in .gitattributes files in the working tree as well (see ATTRIBUTES)."),
+                    new GitCommandOption("--worktree-attributes", @"--worktree-attributes", @"Look for attributes in .gitattributes files in the working tree as well (see ATTRIBUTES).")
                 },
                 "bisect" => new GitCommandOption[] { },
                 "blame" => new[]
@@ -294,7 +762,7 @@ If ':<funcname>' is given in place of <start> and <end>, it is a regular express
                     new GitCommandOption("--show-number", @"--show-number", @"Show the line number in the original commit (Default: off)."),
                     new GitCommandOption("--show-stats", @"--show-stats", @"Include additional statistics at the end of blame output."),
                     new GitCommandOption("-t", @"-t", @"Show raw timestamp (Default: off)."),
-                    new GitCommandOption("-w", @"-w", @"Ignore whitespace when comparing the parent's version and the child's to find where the lines came from."),
+                    new GitCommandOption("-w", @"-w", @"Ignore whitespace when comparing the parent's version and the child's to find where the lines came from.")
                 },
                 "branch" => new[]
                 {
@@ -363,7 +831,7 @@ This behavior is the default when the start point is a remote-tracking branch. S
                     new GitCommandOption("--verbose", @"--verbose",
                         @"When in list mode, show sha1 and commit subject line for each head, along with relationship to upstream branch (if any). If given twice, print the name of the upstream branch, as well (see also git remote show <remote>)."),
                     new GitCommandOption("-vv", @"-vv",
-                        @"When in list mode, show sha1 and commit subject line for each head, along with relationship to upstream branch (if any). If given twice, print the name of the upstream branch, as well (see also git remote show <remote>)."),
+                        @"When in list mode, show sha1 and commit subject line for each head, along with relationship to upstream branch (if any). If given twice, print the name of the upstream branch, as well (see also git remote show <remote>).")
                 },
                 "bundle" => new GitCommandOption[] { },
                 "checkout" => new[]
@@ -416,7 +884,7 @@ If no -b option is given, the name of the new branch will be derived from the re
 Note that during git rebase and git pull --rebase, ours and theirs may appear swapped; --ours gives the version from the branch the changes are rebased onto, while --theirs gives the version from the branch that holds your work that is being rebased.
 This is because rebase is used in a workflow that treats the history at the remote as the shared canonical one, and treats the work done on the branch you are rebasing as the third-party work to be integrated, and you are temporarily assuming the role of the keeper of the canonical history during the rebase. As the keeper of the canonical history, you need to view the history from the remote as ours (i.e. ""our shared canonical history""), while what you did on your side branch as theirs (i.e. ""one contributor''s work on top of it"")."),
                     new GitCommandOption("--track", @"--track", @"When creating a new branch, set up ""upstream"" configuration. See ""--track"" in git-branch[1] for details.
-If no -b option is given, the name of the new branch will be derived from the remote-tracking branch, by looking at the local part of the refspec configured for the corresponding remote, and then stripping the initial part up to the ""*"". This would tell us to use ""hack"" as the local branch when branching off of ""origin/hack"" (or ""remotes/origin/hack"", or even ""refs/remotes/origin/hack""). If the given name has no slash, or the above guessing results in an empty name, the guessing is aborted. You can explicitly give a name with -b in such a case."),
+If no -b option is given, the name of the new branch will be derived from the remote-tracking branch, by looking at the local part of the refspec configured for the corresponding remote, and then stripping the initial part up to the ""*"". This would tell us to use ""hack"" as the local branch when branching off of ""origin/hack"" (or ""remotes/origin/hack"", or even ""refs/remotes/origin/hack""). If the given name has no slash, or the above guessing results in an empty name, the guessing is aborted. You can explicitly give a name with -b in such a case.")
                 },
                 "cherry" => new GitCommandOption[] { },
                 "cherry-pick" => new[]
@@ -461,7 +929,7 @@ This is useful when cherry-picking more than one commits'' effect to your index 
                         @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details."),
                     new GitCommandOption("-x", @"-x",
                         @"When recording the commit, append a line that says ""(cherry picked from commit ...)"" to the original commit message in order to indicate which commit this change was cherry-picked from. This is done only for cherry picks without conflicts. Do not use this option if you are cherry-picking from your private branch because the information is useless to the recipient. If on the other hand you are cherry-picking between two publicly visible branches (e.g. backporting a fix to a maintenance branch for an older release from a development branch), adding this information can be useful."),
-                    new GitCommandOption("-X<option>", @"-X<option>", @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details."),
+                    new GitCommandOption("-X<option>", @"-X<option>", @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details.")
                 },
                 "citool" => new GitCommandOption[] { },
                 "clean" => new[]
@@ -484,7 +952,7 @@ This is useful when cherry-picking more than one commits'' effect to your index 
                     new GitCommandOption("--quiet", @"--quiet", @"Be quiet, only report errors, but not the files that are successfully removed."),
                     new GitCommandOption("-x", @"-x",
                         @"Don''t use the standard ignore rules read from .gitignore (per directory) and $GIT_DIR/info/exclude, but do still use the ignore rules given with -e options. This allows removing all untracked files, including build products. This can be used (possibly in conjunction with git reset) to create a pristine working directory to test a clean build."),
-                    new GitCommandOption("-X", @"-X", @"Remove only files ignored by Git. This may be useful to rebuild everything from scratch, but keep manually created files."),
+                    new GitCommandOption("-X", @"-X", @"Remove only files ignored by Git. This may be useful to rebuild everything from scratch, but keep manually created files.")
                 },
                 "clone" => new[]
                 {
@@ -554,7 +1022,7 @@ If you want to break the dependency of a repository cloned with -s on its source
                     new GitCommandOption("--upload-pack", @"--upload-pack <upload-pack>",
                         @"When given, and the repository to clone from is accessed via ssh, this specifies a non-default path for the command run on the other end."),
                     new GitCommandOption("-v", @"-v", @"Run verbosely. Does not affect the reporting of progress status to the standard error stream."),
-                    new GitCommandOption("--verbose", @"--verbose", @"Run verbosely. Does not affect the reporting of progress status to the standard error stream."),
+                    new GitCommandOption("--verbose", @"--verbose", @"Run verbosely. Does not affect the reporting of progress status to the standard error stream.")
                 },
                 "commit" => new[]
                 {
@@ -673,12 +1141,11 @@ The default can be changed using the status.showUntrackedFiles configuration var
                     new GitCommandOption("-v", @"-v",
                         @"Show unified diff between the HEAD commit and what would be committed at the bottom of the commit message template to help the user describe the commit by reminding what changes the commit has. Note that this diff output doesn''t have its lines prefixed with #. This diff will not be a part of the commit message. See the commit.verbose configuration variable in git-config[1].
 If specified twice, show in addition the unified diff between what would be committed and the worktree files, i.e. the unstaged changes to tracked files."),
-                    new GitCommandOption(
-                        "--verbose", @"--verbose",
+                    new GitCommandOption("--verbose", @"--verbose",
                         @"Show unified diff between the HEAD commit and what would be committed at the bottom of the commit message template to help the user describe the commit by reminding what changes the commit has. Note that this diff output doesn''t have its lines prefixed with #. This diff will not be a part of the commit message. See the commit.verbose configuration variable in git-config[1].
 If specified twice, show in addition the unified diff between what would be committed and the worktree files, i.e. the unstaged changes to tracked files."),
                     new GitCommandOption("-z", @"-z",
-                        @"When showing short or porcelain status output, terminate entries in the status output with NUL, instead of LF. If no format is given, implies the --porcelain output format."),
+                        @"When showing short or porcelain status output, terminate entries in the status output with NUL, instead of LF. If no format is given, implies the --porcelain output format.")
                 },
                 "config" => new[]
                 {
@@ -733,7 +1200,7 @@ See also FILES."),
                     new GitCommandOption("--unset", @"--unset", @"Remove the line matching the key from config file."),
                     new GitCommandOption("--unset-all", @"--unset-all", @"Remove all lines matching the key from config file."),
                     new GitCommandOption("-z", @"-z",
-                        @"For all options that output values and/or keys, always end values with the null character (instead of a newline). Use newline instead as a delimiter between key and value. This allows for secure parsing of the output without getting confused e.g. by values that contain line breaks."),
+                        @"For all options that output values and/or keys, always end values with the null character (instead of a newline). Use newline instead as a delimiter between key and value. This allows for secure parsing of the output without getting confused e.g. by values that contain line breaks.")
                 },
                 "describe" => new[]
                 {
@@ -759,7 +1226,7 @@ See also FILES."),
                     new GitCommandOption("--match", @"--match <pattern>",
                         @"Only consider tags matching the given glob(7) pattern, excluding the ""refs/tags/"" prefix. This can be used to avoid leaking private tags from the repository."),
                     new GitCommandOption("--tags", @"--tags",
-                        @"Instead of using only the annotated tags, use any tag found in refs/tags namespace. This option enables matching a lightweight (non-annotated) tag."),
+                        @"Instead of using only the annotated tags, use any tag found in refs/tags namespace. This option enables matching a lightweight (non-annotated) tag.")
                 },
                 "diff" => new[]
                 {
@@ -847,8 +1314,7 @@ See the pickaxe entry in gitdiffcore[7] for more information."),
                         @"These are to help debugging and tuning experimental heuristics (which are off by default) that shift diff hunk boundaries to make patches easier to read."),
                     new GitCommandOption("--inter-hunk-context", @"--inter-hunk-context=<lines>",
                         @"Show the context between diff hunks, up to the specified number of lines, thereby fusing hunks that are close to each other."),
-                    new GitCommandOption(
-                        "--irreversible-delete", @"--irreversible-delete",
+                    new GitCommandOption("--irreversible-delete", @"--irreversible-delete",
                         @"Omit the preimage for deletes, i.e. print only the header but not the diff between the preimage and /dev/null. The resulting patch is not meant to be applied with patch or git apply; this is solely for people who want to just concentrate on reviewing the text after the change. In addition, the output obviously lack enough information to apply such a patch in reverse, even manually, hence the name of the option.
 When used together with -B, omit also the preimage in the deletion part of a delete/create pair."),
                     new GitCommandOption("--ita-invisible-in-index", @"--ita-invisible-in-index",
@@ -931,7 +1397,7 @@ The regex can also be set via a diff driver or configuration option, see gitattr
                     new GitCommandOption("--ws-error-highlight", @"--ws-error-highlight=<kind>",
                         @"Highlight whitespace errors on lines specified by <kind> in the color specified by color.diff.whitespace. <kind> is a comma separated list of old, new, context. When this option is not given, only whitespace errors in new lines are highlighted. E.g. --ws-error-highlight=new,old highlights whitespace errors on both deleted and added lines. all can be used as a short-hand for old,new,context. The diff.wsErrorHighlight configuration variable can be used to specify the default behaviour."),
                     new GitCommandOption("-z", @"-z", @"When --raw, --numstat, --name-only or --name-status has been given, do not munge pathnames and use NULs as output field terminators.
-Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred."),
+Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred.")
                 },
                 "difftool" => new[]
                 {
@@ -970,7 +1436,7 @@ When git difftool is invoked with this tool (either through the -t or --tool opt
                     new GitCommandOption("--tool-help", @"--tool-help", @"Print a list of diff tools that may be used with --tool."),
                     new GitCommandOption("-x", @"-x <command>",
                         @"Specify a custom command for viewing diffs. git-difftool ignores the configured defaults and runs $command $LOCAL $REMOTE when this option is specified. Additionally, $BASE is set in the environment."),
-                    new GitCommandOption("-y", @"-y", @"Do not prompt before launching a diff tool."),
+                    new GitCommandOption("-y", @"-y", @"Do not prompt before launching a diff tool.")
                 },
                 "fetch" => new[]
                 {
@@ -1041,7 +1507,7 @@ If the source repository is shallow, fetch as much as possible so that the curre
                         @"By default when fetching from a shallow repository, git fetch refuses refs that require updating .git/shallow. This option updates .git/shallow and accept such refs."),
                     new GitCommandOption("--upload-pack", @"--upload-pack <upload-pack>",
                         @"When given, and the repository to fetch from is handled by git fetch-pack, --exec=<upload-pack> is passed to the command to specify non-default path for the command run on the other end."),
-                    new GitCommandOption("-v", @"-v", @"Be verbose."), new GitCommandOption("--verbose", @"--verbose", @"Be verbose."),
+                    new GitCommandOption("-v", @"-v", @"Be verbose."), new GitCommandOption("--verbose", @"--verbose", @"Be verbose.")
                 },
                 "format-patch" => new[]
                 {
@@ -1136,8 +1602,7 @@ Note that this option is only useful if you are actually sending the emails and 
                         @"Make the first mail (or all the mails with --no-thread) appear as a reply to the given Message-Id, which avoids breaking threads to provide a new patch series."),
                     new GitCommandOption("--inter-hunk-context", @"--inter-hunk-context=<lines>",
                         @"Show the context between diff hunks, up to the specified number of lines, thereby fusing hunks that are close to each other."),
-                    new GitCommandOption(
-                        "--irreversible-delete", @"--irreversible-delete",
+                    new GitCommandOption("--irreversible-delete", @"--irreversible-delete",
                         @"Omit the preimage for deletes, i.e. print only the header but not the diff between the preimage and /dev/null. The resulting patch is not meant to be applied with patch or git apply; this is solely for people who want to just concentrate on reviewing the text after the change. In addition, the output obviously lack enough information to apply such a patch in reverse, even manually, hence the name of the option.
 When used together with -B, omit also the preimage in the deletion part of a delete/create pair."),
                     new GitCommandOption("--ita-invisible-in-index", @"--ita-invisible-in-index",
@@ -1226,7 +1691,7 @@ Beware that the default for git send-email is to thread emails itself. If you wa
                         @"Mark the series as the <n>-th iteration of the topic. The output filenames have v<n> prepended to them, and the subject prefix (""PATCH"" by default, but configurable via the --subject-prefix option) has ` v<n>` appended to it. E.g. --reroll-count=4 may produce v4-0001-add-makefile.patch file that has ""Subject: [PATCH v4 1/20] Add makefile"" in it."),
                     new GitCommandOption("-W", @"-W", @"Show whole surrounding functions of changes."),
                     new GitCommandOption("-w", @"-w", @"Ignore whitespace when comparing lines. This ignores differences even if one line has whitespace where the other line has none."),
-                    new GitCommandOption("--zero-commit", @"--zero-commit", @"Output an all-zero hash in each patch's From header instead of the hash of the commit."),
+                    new GitCommandOption("--zero-commit", @"--zero-commit", @"Output an all-zero hash in each patch's From header instead of the hash of the commit.")
                 },
                 "gc" => new[]
                 {
@@ -1240,7 +1705,7 @@ If the number of packs exceeds the value of gc.autoPackLimit, then existing pack
                     new GitCommandOption("--no-prune", @"--no-prune", @"Do not prune any loose objects."),
                     new GitCommandOption("--prune", @"--prune=<date>",
                         @"Prune loose objects older than date (default is 2 weeks ago, overridable by the config variable gc.pruneExpire). --prune=all prunes loose objects regardless of their age (do not use --prune=all unless you know exactly what you are doing. Unless the repository is quiescent, you will lose newly created objects that haven''t been anchored with the refs and end up corrupting your repository). --prune is on by default."),
-                    new GitCommandOption("--quiet", @"--quiet", @"Suppress all progress reports."),
+                    new GitCommandOption("--quiet", @"--quiet", @"Suppress all progress reports.")
                 },
                 "grep" => new[]
                 {
@@ -1336,7 +1801,7 @@ If the number of packs exceeds the value of gc.autoPackLimit, then existing pack
                         @"Show the surrounding text from the previous line containing a function name up to the one before the next function name, effectively showing the whole function in which the match was found."),
                     new GitCommandOption("--word-regexp", @"--word-regexp",
                         @"Match the pattern only at word boundary (either begin at the beginning of a line, or preceded by a non-word character; end at the end of a line or followed by a non-word character)."),
-                    new GitCommandOption("-z", @"-z", @"Output \\0 instead of the character that normally follows a file name."),
+                    new GitCommandOption("-z", @"-z", @"Output \\0 instead of the character that normally follows a file name.")
                 },
                 "gui" => new GitCommandOption[] { },
                 "help" => new[]
@@ -1356,7 +1821,7 @@ By default the man program will be used to display the manual page, but the man.
                     new GitCommandOption("-w", @"-w", @"Display manual page for the command in the web (HTML) format. A web browser will be used for that purpose.
 The web browser can be specified using the configuration variable help.browser, or web.browser if the former is not set. If none of these config variables is set, the git web{litdd}browse helper script (called by git help) will pick a suitable default. See git-web{litdd}browse[1] for more information about this."),
                     new GitCommandOption("--web", @"--web", @"Display manual page for the command in the web (HTML) format. A web browser will be used for that purpose.
-The web browser can be specified using the configuration variable help.browser, or web.browser if the former is not set. If none of these config variables is set, the git web{litdd}browse helper script (called by git help) will pick a suitable default. See git-web{litdd}browse[1] for more information about this."),
+The web browser can be specified using the configuration variable help.browser, or web.browser if the former is not set. If none of these config variables is set, the git web{litdd}browse helper script (called by git help) will pick a suitable default. See git-web{litdd}browse[1] for more information about this.")
                 },
                 "init" => new[]
                 {
@@ -1370,7 +1835,7 @@ If this is reinitialization, the repository will be moved to the specified path.
                         @"Specify that the Git repository is to be shared amongst several users. This allows users belonging to the same group to push into that repository. When specified, the config variable ""core.sharedRepository"" is set so that files and directories under $GIT_DIR are created with the requested permissions. When not specified, Git will use permissions reported by umask(2).
 The option can have the following values, defaulting to group if no value is given:"),
                     new GitCommandOption("--template", @"--template=<template_directory>",
-                        @"Specify the directory from which templates will be used. (See the ""TEMPLATE DIRECTORY"" section below.)"),
+                        @"Specify the directory from which templates will be used. (See the ""TEMPLATE DIRECTORY"" section below.)")
                 },
                 "instaweb" => new[]
                 {
@@ -1391,7 +1856,7 @@ The option can have the following values, defaulting to group if no value is giv
                     new GitCommandOption("--restart", @"--restart", @"Restart the httpd instance and exit. Regenerate configuration files as necessary for spawning a new instance."),
                     new GitCommandOption("--start", @"--start", @"Start the httpd instance and exit. Regenerate configuration files as necessary for spawning a new instance."),
                     new GitCommandOption("--stop", @"--stop",
-                        @"Stop the httpd instance and exit. This does not generate any of the configuration files for spawning a new instance, nor does it close the browser."),
+                        @"Stop the httpd instance and exit. This does not generate any of the configuration files for spawning a new instance, nor does it close the browser.")
                 },
                 "log" => new[]
                 {
@@ -1841,7 +2306,7 @@ The regex can also be set via a diff driver or configuration option, see gitattr
                         @"Highlight whitespace errors on lines specified by <kind> in the color specified by color.diff.whitespace. <kind> is a comma separated list of old, new, context. When this option is not given, only whitespace errors in new lines are highlighted. E.g. --ws-error-highlight=new,old highlights whitespace errors on both deleted and added lines. all can be used as a short-hand for old,new,context. The diff.wsErrorHighlight configuration variable can be used to specify the default behaviour."),
                     new GitCommandOption("-z", @"-z", @"Separate the commits with NULs instead of with new newlines.
 Also, when --raw or --numstat has been given, do not munge pathnames and use NULs as output field terminators.
-Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred."),
+Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred.")
                 },
                 "merge" => new[]
                 {
@@ -1915,7 +2380,7 @@ With -n or --no-stat do not show a diffstat at the end of the merge."),
                     new GitCommandOption("-v", @"-v", @"Be verbose."), new GitCommandOption("--verbose", @"--verbose", @"Be verbose."),
                     new GitCommandOption("--verify-signatures", @"--verify-signatures",
                         @"Verify that the tip commit of the side branch being merged is signed with a valid key, i.e. a key that has a valid uid: in the default trust model, this means the signing key has been signed by a trusted key. If the tip commit of the side branch is not signed with a valid key, the merge is aborted."),
-                    new GitCommandOption("-X", @"-X <option>", @"Pass merge strategy specific option through to the merge strategy."),
+                    new GitCommandOption("-X", @"-X <option>", @"Pass merge strategy specific option through to the merge strategy.")
                 },
                 "mergetool" => new[]
                 {
@@ -1940,7 +2405,7 @@ When git mergetool is invoked with this tool (either through the -t or --tool op
 If the custom merge tool correctly indicates the success of a merge resolution with its exit code, then the configuration variable mergetool.<tool>.trustExitCode can be set to true. Otherwise, git mergetool will prompt the user to indicate the success of the resolution after the custom tool has exited."),
                     new GitCommandOption("--tool-help", @"--tool-help", @"Print a list of merge tools that may be used with --tool."),
                     new GitCommandOption("-y", @"-y",
-                        @"Don''t prompt before each invocation of the merge resolution program. This is the default if the merge resolution program is explicitly specified with the --tool option or with the merge.tool configuration variable."),
+                        @"Don''t prompt before each invocation of the merge resolution program. This is the default if the merge resolution program is explicitly specified with the --tool option or with the merge.tool configuration variable.")
                 },
                 "mv" => new[]
                 {
@@ -1950,7 +2415,7 @@ If the custom merge tool correctly indicates the success of a merge resolution w
                     new GitCommandOption("-k", @"-k",
                         @"Skip move or rename actions which would lead to an error condition. An error happens when a source is neither existing nor controlled by Git, or when it would overwrite an existing file unless -f is given."),
                     new GitCommandOption("-n", @"-n", @"Do nothing; only show what would happen"), new GitCommandOption("-v", @"-v", @"Report the names of files as they are moved."),
-                    new GitCommandOption("--verbose", @"--verbose", @"Report the names of files as they are moved."),
+                    new GitCommandOption("--verbose", @"--verbose", @"Report the names of files as they are moved.")
                 },
                 "notes" => new[]
                 {
@@ -1990,7 +2455,7 @@ If the custom merge tool correctly indicates the success of a merge resolution w
                     new GitCommandOption("--strategy", @"--strategy=<strategy>",
                         @"When merging notes, resolve notes conflicts using the given strategy. The following strategies are recognized: ""manual"" (default), ""ours"", ""theirs"", ""union"" and ""cat_sort_uniq"". This option overrides the ""notes.mergeStrategy"" configuration setting. See the ""NOTES MERGE STRATEGIES"" section below for more information on each notes merge strategy."),
                     new GitCommandOption("-v", @"-v", @"When merging notes, be more verbose. When pruning notes, report all object names whose notes are removed."),
-                    new GitCommandOption("--verbose", @"--verbose", @"When merging notes, be more verbose. When pruning notes, report all object names whose notes are removed."),
+                    new GitCommandOption("--verbose", @"--verbose", @"When merging notes, be more verbose. When pruning notes, report all object names whose notes are removed.")
                 },
                 "prune" => new[]
                 {
@@ -1998,7 +2463,7 @@ If the custom merge tool correctly indicates the success of a merge resolution w
                     new GitCommandOption("--dry-run", @"--dry-run", @"Do not remove anything; just report what it would remove."),
                     new GitCommandOption("--expire", @"--expire <time>", @"Only expire loose objects older than <time>."),
                     new GitCommandOption("-n", @"-n", @"Do not remove anything; just report what it would remove."), new GitCommandOption("-v", @"-v", @"Report all removed objects."),
-                    new GitCommandOption("--verbose", @"--verbose", @"Report all removed objects."),
+                    new GitCommandOption("--verbose", @"--verbose", @"Report all removed objects.")
                 },
                 "pull" => new[]
                 {
@@ -2120,7 +2585,7 @@ If the source repository is shallow, fetch as much as possible so that the curre
                     new GitCommandOption("--verbose", @"--verbose", @"Pass --verbose to git-fetch and git-merge."),
                     new GitCommandOption("--verify-signatures", @"--verify-signatures",
                         @"Verify that the tip commit of the side branch being merged is signed with a valid key, i.e. a key that has a valid uid: in the default trust model, this means the signing key has been signed by a trusted key. If the tip commit of the side branch is not signed with a valid key, the merge is aborted."),
-                    new GitCommandOption("-X", @"-X <option>", @"Pass merge strategy specific option through to the merge strategy."),
+                    new GitCommandOption("-X", @"-X <option>", @"Pass merge strategy specific option through to the merge strategy.")
                 },
                 "push" => new[]
                 {
@@ -2213,7 +2678,7 @@ Note that all forms other than --force-with-lease=<refname>:<expect> that specif
                     new GitCommandOption("--tags", @"--tags", @"All refs under refs/tags are pushed, in addition to refspecs explicitly listed on the command line."),
                     new GitCommandOption("-u", @"-u",
                         @"For every branch that is up to date or successfully pushed, add upstream (tracking) reference, used by argument-less git-pull[1] and other commands. For more information, see branch.<name>.merge in git-config[1]."),
-                    new GitCommandOption("-v", @"-v", @"Run verbosely."), new GitCommandOption("--verbose", @"--verbose", @"Run verbosely."),
+                    new GitCommandOption("-v", @"-v", @"Run verbosely."), new GitCommandOption("--verbose", @"--verbose", @"Run verbosely.")
                 },
                 "rebase" => new[]
                 {
@@ -2319,7 +2784,7 @@ git rebase -i --exec ""cmd1"" --exec ""cmd2"" --exec ...
 If --autosquash is used, ""exec"" lines will not be appended for the intermediate commits, and will only appear at the end of each squash/fixup series.
 This uses the --interactive machinery internally, but it can be run without an explicit --interactive."),
                     new GitCommandOption("-X", @"-X <strategy-option>",
-                        @"Pass the <strategy-option> through to the merge strategy. This implies --merge and, if no strategy has been specified, -s recursive. Note the reversal of ours and theirs as noted above for the -m option."),
+                        @"Pass the <strategy-option> through to the merge strategy. This implies --merge and, if no strategy has been specified, -s recursive. Note the reversal of ours and theirs as noted above for the -m option.")
                 },
                 "reflog" => new[]
                 {
@@ -2337,12 +2802,12 @@ This uses the --interactive machinery internally, but it can be run without an e
 This computation involves traversing all the reachable objects, i.e. it has the same cost as git prune. It is primarily intended to fix corruption caused by garbage collecting using older versions of Git, which didn''t protect objects referred to by reflogs."),
                     new GitCommandOption("--updateref", @"--updateref",
                         @"Update the reference to the value of the top reflog entry (i.e. <ref>@{0}) if the previous top entry was pruned. (This option is ignored for symbolic references.)"),
-                    new GitCommandOption("--verbose", @"--verbose", @"Print extra information on screen."),
+                    new GitCommandOption("--verbose", @"--verbose", @"Print extra information on screen.")
                 },
                 "remote" => new[]
                 {
                     new GitCommandOption("-v", @"-v", @"Be a little more verbose and show remote url after name. NOTE: This must be placed between remote and subcommand."),
-                    new GitCommandOption("--verbose", @"--verbose", @"Be a little more verbose and show remote url after name. NOTE: This must be placed between remote and subcommand."),
+                    new GitCommandOption("--verbose", @"--verbose", @"Be a little more verbose and show remote url after name. NOTE: This must be placed between remote and subcommand.")
                 },
                 "rerere" => new GitCommandOption[] { },
                 "reset" => new[]
@@ -2358,7 +2823,7 @@ In other words, --merge does something like a git read-tree -u -m <commit>, but 
 If -N is specified, removed paths are marked as intent-to-add (see git-add[1])."),
                     new GitCommandOption("-q", @"-q", @"Be quiet, only report errors."), new GitCommandOption("--quiet", @"--quiet", @"Be quiet, only report errors."),
                     new GitCommandOption("--soft", @"--soft",
-                        @"Does not touch the index file or the working tree at all (but resets the head to <commit>, just like all modes do). This leaves all your changed files ""Changes to be committed"", as git status would put it."),
+                        @"Does not touch the index file or the working tree at all (but resets the head to <commit>, just like all modes do). This leaves all your changed files ""Changes to be committed"", as git status would put it.")
                 },
                 "revert" => new[]
                 {
@@ -2397,7 +2862,7 @@ This is useful when reverting more than one commits'' effect to your index in a 
                         @"Use the given merge strategy. Should only be used once. See the MERGE STRATEGIES section in git-merge[1] for details."),
                     new GitCommandOption("--strategy-option", @"--strategy-option=<option>",
                         @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details."),
-                    new GitCommandOption("-X<option>", @"-X<option>", @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details."),
+                    new GitCommandOption("-X<option>", @"-X<option>", @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details.")
                 },
                 "rm" => new[]
                 {
@@ -2414,7 +2879,7 @@ This is useful when reverting more than one commits'' effect to your index in a 
                     new GitCommandOption("-q", @"-q", @"git rm normally outputs one line (in the form of an rm command) for each file removed. This option suppresses that output."),
                     new GitCommandOption("--quiet", @"--quiet",
                         @"git rm normally outputs one line (in the form of an rm command) for each file removed. This option suppresses that output."),
-                    new GitCommandOption("-r", @"-r", @"Allow recursive removal when a leading directory name is given."),
+                    new GitCommandOption("-r", @"-r", @"Allow recursive removal when a leading directory name is given.")
                 },
                 "shortlog" => new[]
                 {
@@ -2430,7 +2895,7 @@ Each pretty-printed commit will be rewrapped before it is shown."),
                     new GitCommandOption("--summary", @"--summary", @"Suppress commit description and provide a commit count summary only."), new GitCommandOption(
                         "-w[<width>[,<indent1>[,<indent2>]]]", @"-w[<width>[,<indent1>[,<indent2>]]]",
                         @"Linewrap the output by wrapping each line at width. The first line of each entry is indented by indent1 spaces, and the second and subsequent lines are indented by indent2 spaces. width, indent1, and indent2 default to 76, 6 and 9 respectively.
-If width is 0 (zero) then indent the lines of the output without wrapping them."),
+If width is 0 (zero) then indent the lines of the output without wrapping them.")
                 },
                 "show" => new[]
                 {
@@ -2533,8 +2998,7 @@ See the pickaxe entry in gitdiffcore[7] for more information."),
                         @"These are to help debugging and tuning experimental heuristics (which are off by default) that shift diff hunk boundaries to make patches easier to read."),
                     new GitCommandOption("--inter-hunk-context", @"--inter-hunk-context=<lines>",
                         @"Show the context between diff hunks, up to the specified number of lines, thereby fusing hunks that are close to each other."),
-                    new GitCommandOption(
-                        "--irreversible-delete", @"--irreversible-delete",
+                    new GitCommandOption("--irreversible-delete", @"--irreversible-delete",
                         @"Omit the preimage for deletes, i.e. print only the header but not the diff between the preimage and /dev/null. The resulting patch is not meant to be applied with patch or git apply; this is solely for people who want to just concentrate on reviewing the text after the change. In addition, the output obviously lack enough information to apply such a patch in reverse, even manually, hence the name of the option.
 When used together with -B, omit also the preimage in the deletion part of a delete/create pair."),
                     new GitCommandOption("--ita-invisible-in-index", @"--ita-invisible-in-index",
@@ -2637,7 +3101,7 @@ The regex can also be set via a diff driver or configuration option, see gitattr
                         @"Highlight whitespace errors on lines specified by <kind> in the color specified by color.diff.whitespace. <kind> is a comma separated list of old, new, context. When this option is not given, only whitespace errors in new lines are highlighted. E.g. --ws-error-highlight=new,old highlights whitespace errors on both deleted and added lines. all can be used as a short-hand for old,new,context. The diff.wsErrorHighlight configuration variable can be used to specify the default behaviour."),
                     new GitCommandOption("-z", @"-z", @"Separate the commits with NULs instead of with new newlines.
 Also, when --raw or --numstat has been given, do not munge pathnames and use NULs as output field terminators.
-Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred."),
+Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred.")
                 },
                 "stash" => new GitCommandOption[] { },
                 "status" => new[]
@@ -2676,7 +3140,7 @@ The default can be changed using the status.showUntrackedFiles configuration var
                         @"In addition to the names of files that have been changed, also show the textual changes that are staged to be committed (i.e., like the output of git diff --cached). If -v is specified twice, then also show the changes in the working tree that have not yet been staged (i.e., like the output of git diff)."),
                     new GitCommandOption("--verbose", @"--verbose",
                         @"In addition to the names of files that have been changed, also show the textual changes that are staged to be committed (i.e., like the output of git diff --cached). If -v is specified twice, then also show the changes in the working tree that have not yet been staged (i.e., like the output of git diff)."),
-                    new GitCommandOption("-z", @"-z", @"Terminate entries with NUL, instead of LF. This implies the --porcelain=v1 output format if no other format is given."),
+                    new GitCommandOption("-z", @"-z", @"Terminate entries with NUL, instead of LF. This implies the --porcelain=v1 output format if no other format is given.")
                 },
                 "submodule" => new[]
                 {
@@ -2727,7 +3191,7 @@ This works for any of the supported update procedures (--checkout, --rebase, etc
 In order to ensure a current tracking branch state, update --remote fetches the submodule''s remote repository before calculating the SHA-1. If you don''t want to fetch, you should use submodule update --remote --no-fetch.
 Use this option to integrate changes from the upstream subproject with your submodule''s current HEAD. Alternatively, you can run git pull from the submodule, which is equivalent except for the remote branch name: update --remote uses the default upstream repository and submodule.<name>.branch, while git pull uses the submodule''s branch.<name>.merge. Prefer submodule.<name>.branch if you want to distribute the default upstream branch with the superproject and branch.<name>.merge if you want a more native feel while working in the submodule itself."),
                     new GitCommandOption("--summary-limit", @"--summary-limit",
-                        @"This option is only valid for the summary command. Limit the summary size (number of commits shown in total). Giving 0 will disable the summary; a negative number means unlimited (the default). This limit only applies to modified submodules. The size is always limited to 1 for added/deleted/typechanged submodules."),
+                        @"This option is only valid for the summary command. Limit the summary size (number of commits shown in total). Giving 0 will disable the summary; a negative number means unlimited (the default). This limit only applies to modified submodules. The size is always limited to 1 for added/deleted/typechanged submodules.")
                 },
                 "svn" => new[]
                 {
@@ -2921,7 +3385,7 @@ Passed directly to git rebase when using dcommit if a git reset cannot be used (
                     new GitCommandOption("--use-svm-props", @"--use-svm-props", @"Set the useSvmProps option in the [svn-remote] config."),
                     new GitCommandOption("--use-svnsync-props", @"--use-svnsync-props", @"Set the useSvnsyncProps option in the [svn-remote] config."),
                     new GitCommandOption("-v", @"-v", @"it's not completely compatible with the --verbose output in svn log, but reasonably close."),
-                    new GitCommandOption("--verbose", @"--verbose", @"it's not completely compatible with the --verbose output in svn log, but reasonably close."),
+                    new GitCommandOption("--verbose", @"--verbose", @"it's not completely compatible with the --verbose output in svn log, but reasonably close.")
                 },
                 "tag" => new[]
                 {
@@ -2967,526 +3431,10 @@ This option is only applicable when listing tags without annotation lines."),
                         @"Sort based on the key given. Prefix - to sort in descending order of the value. You may use the --sort=<key> option multiple times, in which case the last key becomes the primary key. Also supports ""version:refname"" or ""v:refname"" (tag names are treated as versions). The ""version:refname"" sort order can also be affected by the ""versionsort.prereleaseSuffix"" configuration variable. The keys supported are the same as those in git for-each-ref. Sort order defaults to the value configured for the tag.sort variable if it exists, or lexicographic order otherwise. See git-config[1]."),
                     new GitCommandOption("-u", @"-u <keyid>", @"Make a GPG-signed tag, using the given key."),
                     new GitCommandOption("-v", @"-v", @"Verify the GPG signature of the given tag names."),
-                    new GitCommandOption("--verify", @"--verify", @"Verify the GPG signature of the given tag names."),
+                    new GitCommandOption("--verify", @"--verify", @"Verify the GPG signature of the given tag names.")
                 },
                 _ => new GitCommandOption[] { }
             };
         }
-
-        public static GitCommand[] Commands =
-        {
-            #region Commands
-            new GitCommand("add",
-                "Add file contents to the index",
-                @"git add [--verbose | -v] [--dry-run | -n] [--force | -f] [--interactive | -i] [--patch | -p]
-	  [--edit | -e] [--[no-]all | --[no-]ignore-removal | [--update | -u]]
-	  [--intent-to-add | -N] [--refresh] [--ignore-errors] [--ignore-missing]
-	  [--chmod=(+|-)x] [--] [<pathspec>...]",
-                @"This command updates the index using the current content found in the working tree, to prepare the content staged for the next commit. It typically adds the current content of existing paths as a whole, but with some options it can also be used to add content with only part of the changes made to the working tree files applied, or remove paths that do not exist in the working tree anymor"
-            ),
-            new GitCommand("am",
-                "Apply a series of patches from a mailbox",
-                @"git am [--signoff] [--keep] [--[no-]keep-cr] [--[no-]utf8]
-	 [--[no-]3way] [--interactive] [--committer-date-is-author-date]
-	 [--ignore-date] [--ignore-space-change | --ignore-whitespace]
-	 [--whitespace=<option>] [-C<n>] [-p<n>] [--directory=<dir>]
-	 [--exclude=<path>] [--include=<path>] [--reject] [-q | --quiet]
-	 [--[no-]scissors] [-S[<keyid>]] [--patch-format=<format>]
-	 [(<mbox> | <Maildir>)...]
-git am (--continue | --skip | --abort)",
-                @"Splits mail messages in a mailbox into commit log message, authorship information and patches, and applies them to the current branch."
-            ),
-            new GitCommand("annotate",
-                "Annotate file lines with commit information",
-                @"git annotate [options] file [revision]",
-                @"Annotates each line in the given file with information from the commit which introduced the line. Optionally annotates from a given revision.
-
-
-The only difference between this command and git-blame[1] is that they use slightly different output formats, and this command exists only for backward compatibility to support existing scripts, and provide a more familiar command name for people coming from other SCM systems."
-            ),
-            new GitCommand("archive",
-                "Create an archive of files from a named tree",
-                @"git archive [--format=<fmt>] [--list] [--prefix=<prefix>/] [<extra>]
-	      [-o <file> | --output=<file>] [--worktree-attributes]
-	      [--remote=<repo> [--exec=<git-upload-archive>]] <tree-ish>
-	      [<path>...]",
-                @"Creates an archive of the specified format containing the tree structure for the named tree, and writes it out to the standard output. If <prefix> is specified it is prepended to the filenames in the archiv"
-            ),
-            new GitCommand("bisect",
-                "Use binary search to find the commit that introduced a bug",
-                @"git bisect <subcommand> <options>",
-                @"The command takes various subcommands, and different options depending on the subcommand:
-
-
-git bisect start [--term-{old,good}=<term> --term-{new,bad}=<term>]
-	  [--no-checkout] [<bad> [<good>...]] [--] [<paths>.."
-            ),
-            new GitCommand("blame",
-                "Show what revision and author last modified each line of a file",
-                @"git blame [-c] [-b] [-l] [--root] [-t] [-f] [-n] [-s] [-e] [-p] [-w] [--incremental]
-	    [-L <range>] [-S <revs-file>] [-M] [-C] [-C] [-C] [--since=<date>]
-	    [--progress] [--abbrev=<n>] [<rev> | --contents <file> | --reverse <rev>..<rev>]
-	    [--] <file>",
-                @"Annotates each line in the given file with information from the revision which last modified the line. Optionally, start annotating from the given revision.
-
-
-When specified one or more times, -L restricts annotation to the requested line"
-            ),
-            new GitCommand("branch",
-                "List, create, or delete branches",
-                @"git branch [--color[=<when>] | --no-color] [-r | -a]
-	[--list] [-v [--abbrev=<length> | --no-abbrev]]
-	[--column[=<options>] | --no-column]
-	[(--merged | --no-merged | --contains) [<commit>]] [--sort=<key>]
-	[--points-at <object>] [<pattern>...]
-git branch [--set-upstream | --track | --no-track] [-l] [-f] <branchname> [<start-point>]
-git branch (--set-upstream-to=<upstream> | -u <upstream>) [<branchname>]
-git branch --unset-upstream [<branchname>]
-git branch (-m | -M) [<oldbranch>] <newbranch>
-git branch (-d | -D) [-r] <branchname>...
-git branch --edit-description [<branchname>]",
-                @"If --list is given, or if there are no non-option arguments, existing branches are listed; the current branch will be highlighted with an asterisk. Option -r causes the remote-tracking branches to be listed, and option -a shows both local and remote branches. If a <pattern> is given, it is used as a shell wildcard to restrict the output to matching branches. If multiple patterns are given, a branch is shown if it matches any of the patterns. Note that when providing a <pattern>, you must use --list; otherwise the command is interpreted as branch creatio"
-            ),
-            new GitCommand("bundle",
-                "Move objects and refs by archive",
-                @"git bundle create <file> <git-rev-list-args>
-git bundle verify <file>
-git bundle list-heads <file> [<refname>...]
-git bundle unbundle <file> [<refname>...]",
-                @"Some workflows require that one or more branches of development on one machine be replicated on another machine, but the two machines cannot be directly connected, and therefore the interactive Git protocols (git, ssh, http) cannot be used. This command provides support for git fetch and git pull to operate by packaging objects and references in an archive at the originating machine, then importing those into another repository using git fetch and git pull after moving the archive by some means (e.g., by sneakernet). As no direct connection between the repositories exists, the user must specify a basis for the bundle that is held by the destination repository: the bundle assumes that all objects in the basis are already in the destination repository."
-            ),
-            new GitCommand("checkout",
-                "Switch branches or restore working tree files",
-                @"git checkout [-q] [-f] [-m] [<branch>]
-git checkout [-q] [-f] [-m] --detach [<branch>]
-git checkout [-q] [-f] [-m] [--detach] <commit>
-git checkout [-q] [-f] [-m] [[-b|-B|--orphan] <new_branch>] [<start_point>]
-git checkout [-f|--ours|--theirs|-m|--conflict=<style>] [<tree-ish>] [--] <paths>...
-git checkout [-p|--patch] [<tree-ish>] [--] [<paths>...]",
-                @"Updates files in the working tree to match the version in the index or the specified tree. If no paths are given, git checkout will also update HEAD to set the specified branch as the current branch."
-            ),
-            new GitCommand("cherry",
-                "Find commits yet to be applied to upstream",
-                @"git cherry [-v] [<upstream> [<head> [<limit>]]]",
-                @"Determine whether there are commits in <head>..<upstream> that are equivalent to those in the range <limit>..<head>.
-
-
-The equivalence test is based on the diff, after removing whitespace and line numbers. git-cherry therefore detects when commits have been ""copied"" by means of git-cherry-pick[1], git-am[1] or git-rebase[1"
-            ),
-            new GitCommand("cherry-pick",
-                "Apply the changes introduced by some existing commits",
-                @"git cherry-pick [--edit] [-n] [-m parent-number] [-s] [-x] [--ff]
-		  [-S[<keyid>]] <commit>...
-git cherry-pick --continue
-git cherry-pick --quit
-git cherry-pick --abort",
-                @"Given one or more existing commits, apply the change each one introduces, recording a new commit for each. This requires your working tree to be clean (no modifications from the HEAD commit).
-
-
-When it is not obvious how to apply a change, the following happen"
-            ),
-            new GitCommand("citool",
-                "Graphical alternative to git-commit",
-                @"git citool",
-                @"A Tcl/Tk based graphical interface to review modified files, stage them into the index, enter a commit message and record the new commit onto the current branch. This interface is an alternative to the less interactive git commit progra"
-            ),
-            new GitCommand("clean",
-                "Remove untracked files from the working tree",
-                @"git clean [-d] [-f] [-i] [-n] [-q] [-e <pattern>] [-x | -X] [--] <path>...",
-                @"Cleans the working tree by recursively removing files that are not under version control, starting from the current directory.
-
-
-Normally, only files unknown to Git are removed, but if the -x option is specified, ignored files are also removed. This can, for example, be useful to remove all build product"
-            ),
-            new GitCommand("clone",
-                "Clone a repository into a new directory",
-                @"git clone [--template=<template_directory>]
-	  [-l] [-s] [--no-hardlinks] [-q] [-n] [--bare] [--mirror]
-	  [-o <name>] [-b <name>] [-u <upload-pack>] [--reference <repository>]
-	  [--dissociate] [--separate-git-dir <git dir>]
-	  [--depth <depth>] [--[no-]single-branch]
-	  [--recursive | --recurse-submodules] [--[no-]shallow-submodules]
-	  [--jobs <n>] [--] <repository> [<directory>]",
-                @"Clones a repository into a newly created directory, creates remote-tracking branches for each branch in the cloned repository (visible using git branch -r), and creates and checks out an initial branch that is forked from the cloned repository''s currently active branc"
-            ),
-            new GitCommand("commit",
-                "Record changes to the repository",
-                @"git commit [-a | --interactive | --patch] [-s] [-v] [-u<mode>] [--amend]
-	   [--dry-run] [(-c | -C | --fixup | --squash) <commit>]
-	   [-F <file> | -m <msg>] [--reset-author] [--allow-empty]
-	   [--allow-empty-message] [--no-verify] [-e] [--author=<author>]
-	   [--date=<date>] [--cleanup=<mode>] [--[no-]status]
-	   [-i | -o] [-S[<keyid>]] [--] [<file>...]",
-                @"Stores the current contents of the index in a new commit along with a log message from the user describing the changes.
-
-
-The content to be added can be specified in several ways:
-
-
-by using git add to incrementally ""add"" changes to the index before using the commit command (Note: even modified files must be ""added"""
-            ),
-            new GitCommand("config",
-                "Get and set repository or global options",
-                @"git config [<file-option>] [type] [--show-origin] [-z|--null] name [value [value_regex]]
-git config [<file-option>] [type] --add name value
-git config [<file-option>] [type] --replace-all name value [value_regex]
-git config [<file-option>] [type] [--show-origin] [-z|--null] --get name [value_regex]
-git config [<file-option>] [type] [--show-origin] [-z|--null] --get-all name [value_regex]
-git config [<file-option>] [type] [--show-origin] [-z|--null] [--name-only] --get-regexp name_regex [value_regex]
-git config [<file-option>] [type] [-z|--null] --get-urlmatch name URL
-git config [<file-option>] --unset name [value_regex]
-git config [<file-option>] --unset-all name [value_regex]
-git config [<file-option>] --rename-section old_name new_name
-git config [<file-option>] --remove-section name
-git config [<file-option>] [--show-origin] [-z|--null] [--name-only] -l | --list
-git config [<file-option>] --get-color name [default]
-git config [<file-option>] --get-colorbool name [stdout-is-tty]
-git config [<file-option>] -e | --edit",
-                @"You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
-
-
-Multiple lines can be added to an option by using the --add option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do not match the regex, just prepend a single exclamation mark in front (see also EXAMPLES"
-            ),
-            new GitCommand("describe",
-                "Describe a commit using the most recent tag reachable from it",
-                @"git describe [--all] [--tags] [--contains] [--abbrev=<n>] [<commit-ish>...]
-git describe [--all] [--tags] [--contains] [--abbrev=<n>] --dirty[=<mark>]",
-                @"The command finds the most recent tag that is reachable from a commit. If the tag points to the commit, then only the tag is shown. Otherwise, it suffixes the tag name with the number of additional commits on top of the tagged object and the abbreviated object name of the most recent commi"
-            ),
-            new GitCommand("diff",
-                "Show changes between commits, commit and working tree, etc",
-                @"git diff [options] [<commit>] [--] [<path>...]
-git diff [options] --cached [<commit>] [--] [<path>...]
-git diff [options] <commit> <commit> [--] [<path>...]
-git diff [options] <blob> <blob>
-git diff [options] [--no-index] [--] <path> <path>",
-                @"Show changes between the working tree and the index or a tree, changes between the index and a tree, changes between two trees, changes between two blob objects, or changes between two files on disk."
-            ),
-            new GitCommand("difftool",
-                "Show changes using common diff tools",
-                @"git difftool [<options>] [<commit> [<commit>]] [--] [<path>...]",
-                @"git difftool is a Git command that allows you to compare and edit files between revisions using common diff tools. git difftool is a frontend to git diff and accepts the same options and arguments. See git-diff[1]."
-            ),
-            new GitCommand("fetch",
-                "Download objects and refs from another repository",
-                @"git fetch [<options>] [<repository> [<refspec>...]]
-git fetch [<options>] <group>
-git fetch --multiple [<options>] [(<repository> | <group>)...]
-git fetch --all [<options>]",
-                @"Fetch branches and/or tags (collectively, ""refs"") from one or more other repositories, along with the objects necessary to complete their histories. Remote-tracking branches are updated (see the description of <refspec> below for ways to control this behavior"
-            ),
-            new GitCommand("format-patch",
-                "Prepare patches for e-mail submission",
-                @"git format-patch [-k] [(-o|--output-directory) <dir> | --stdout]
-		   [--no-thread | --thread[=<style>]]
-		   [(--attach|--inline)[=<boundary>] | --no-attach]
-		   [-s | --signoff]
-		   [--signature=<signature> | --no-signature]
-		   [--signature-file=<file>]
-		   [-n | --numbered | -N | --no-numbered]
-		   [--start-number <n>] [--numbered-files]
-		   [--in-reply-to=Message-Id] [--suffix=.<sfx>]
-		   [--ignore-if-in-upstream]
-		   [--rfc] [--subject-prefix=Subject-Prefix]
-		   [(--reroll-count|-v) <n>]
-		   [--to=<email>] [--cc=<email>]
-		   [--[no-]cover-letter] [--quiet] [--notes[=<ref>]]
-		   [<common diff options>]
-		   [ <since> | <revision range> ]",
-                @"Prepare each commit with its patch in one file per commit, formatted to resemble UNIX mailbox format. The output of this command is convenient for e-mail submission or for use with git am.
-
-
-There are two ways to specify which commits to operate o"
-            ),
-            new GitCommand("gc",
-                "Cleanup unnecessary files and optimize the local repository",
-                @"git gc [--aggressive] [--auto] [--quiet] [--prune=<date> | --no-prune] [--force]",
-                @"Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance) and removing unreachable objects which may have been created from prior invocations of git ad"
-            ),
-            new GitCommand("grep",
-                "Print lines matching a pattern",
-                @"git grep [-a | --text] [-I] [--textconv] [-i | --ignore-case] [-w | --word-regexp]
-	   [-v | --invert-match] [-h|-H] [--full-name]
-	   [-E | --extended-regexp] [-G | --basic-regexp]
-	   [-P | --perl-regexp]
-	   [-F | --fixed-strings] [-n | --line-number]
-	   [-l | --files-with-matches] [-L | --files-without-match]
-	   [(-O | --open-files-in-pager) [<pager>]]
-	   [-z | --null]
-	   [-c | --count] [--all-match] [-q | --quiet]
-	   [--max-depth <depth>]
-	   [--color[=<when>] | --no-color]
-	   [--break] [--heading] [-p | --show-function]
-	   [-A <post-context>] [-B <pre-context>] [-C <context>]
-	   [-W | --function-context]
-	   [--threads <num>]
-	   [-f <file>] [-e] <pattern>
-	   [--and|--or|--not|(|)|-e <pattern>...]
-	   [ [--[no-]exclude-standard] [--cached | --no-index | --untracked] | <tree>...]
-	   [--] [<pathspec>...]",
-                @"Look for specified patterns in the tracked files in the work tree, blobs registered in the index file, or blobs in given tree objects. Patterns are lists of one or more search expressions separated by newline characters. An empty string as search expression matches all lines."
-            ),
-            new GitCommand("gui",
-                "A portable graphical interface to Git",
-                @"git gui [<command>] [arguments]",
-                @"A Tcl/Tk based graphical user interface to Git. git gui focuses on allowing users to make changes to their repository by making new commits, amending existing ones, creating branches, performing local merges, and fetching/pushing to remote repositorie"
-            ),
-            new GitCommand("help",
-                "Display help information about Git",
-                @"git help [-a|--all] [-g|--guide]
-	   [-i|--info|-m|--man|-w|--web] [COMMAND|GUIDE]",
-                @"With no options and no COMMAND or GUIDE given, the synopsis of the git command and a list of the most commonly used Git commands are printed on the standard output.
-
-
-If the option --all or -a is given, all available commands are printed on the standard outpu"
-            ),
-            new GitCommand("init",
-                "Create an empty Git repository or reinitialize an existing one",
-                @"git init [-q | --quiet] [--bare] [--template=<template_directory>]
-	  [--separate-git-dir <git dir>]
-	  [--shared[=<permissions>]] [directory]",
-                @"This command creates an empty Git repository - basically a .git directory with subdirectories for objects, refs/heads, refs/tags, and template files. An initial HEAD file that references the HEAD of the master branch is also create"
-            ),
-            new GitCommand("instaweb",
-                "Instantly browse your working repository in gitweb",
-                @"git instaweb [--local] [--httpd=<httpd>] [--port=<port>]
-               [--browser=<browser>]
-git instaweb [--start] [--stop] [--restart]",
-                @"A simple script to set up gitweb and a web server for browsing the local repository."
-            ),
-            new GitCommand("log",
-                "Show commit logs",
-                @"git log [<options>] [<revision range>] [[\--] <path>...]",
-                @"Shows the commit logs.
-
-
-The command takes options applicable to the git rev-list command to control what is shown and how, and options applicable to the git diff-* commands to control how the changes each commit introduces are shown."
-            ),
-            new GitCommand("merge",
-                "Join two or more development histories together",
-                @"git merge [-n] [--stat] [--no-commit] [--squash] [--[no-]edit]
-	[-s <strategy>] [-X <strategy-option>] [-S[<keyid>]]
-	[--[no-]allow-unrelated-histories]
-	[--[no-]rerere-autoupdate] [-m <msg>] [<commit>...]
-git merge <msg> HEAD <commit>...
-git merge --abort",
-                @"Incorporates changes from the named commits (since the time their histories diverged from the current branch) into the current branch. This command is used by git pull to incorporate changes from another repository and can be used by hand to merge changes from one branch into anothe"
-            ),
-            new GitCommand("mergetool",
-                "Run merge conflict resolution tools to resolve merge conflicts",
-                @"git mergetool [--tool=<tool>] [-y | --[no-]prompt] [<file>...]",
-                @"Use git mergetool to run one of several merge utilities to resolve merge conflicts. It is typically run after git merge.
-
-
-If one or more <file> parameters are given, the merge tool program will be run to resolve differences on each file (skipping those without conflicts). Specifying a directory will include all unresolved files in that path. If no <file> names are specified, git mergetool will run the merge tool program on every file with merge conflicts."
-            ),
-            new GitCommand("mv",
-                "Move or rename a file, a directory, or a symlink",
-                @"git mv <options>... <args>...",
-                @"Move or rename a file, directory or symlink.
-
-
-git mv [-v] [-f] [-n] [-k] <source> <destination>
-git mv [-v] [-f] [-n] [-k] <source> ... <destination directory>
-
-
-In the first form, it renames <source>, which must exist and be either a file, symlink or directory, to <destination>. In the second form, the last argument has to be an existing directory; the given sources will be moved into this director"
-            ),
-            new GitCommand("notes",
-                "Add or inspect object notes",
-                @"git notes [list [<object>]]
-git notes add [-f] [--allow-empty] [-F <file> | -m <msg> | (-c | -C) <object>] [<object>]
-git notes copy [-f] ( --stdin | <from-object> <to-object> )
-git notes append [--allow-empty] [-F <file> | -m <msg> | (-c | -C) <object>] [<object>]
-git notes edit [--allow-empty] [<object>]
-git notes show [<object>]
-git notes merge [-v | -q] [-s <strategy> ] <notes-ref>
-git notes merge --commit [-v | -q]
-git notes merge --abort [-v | -q]
-git notes remove [--ignore-missing] [--stdin] [<object>...]
-git notes prune [-n | -v]
-git notes get-ref",
-                @"Adds, removes, or reads notes attached to objects, without touching the objects themselves.
-
-
-By default, notes are saved to and read from refs/notes/commits, but this default can be overridden. See the OPTIONS, CONFIGURATION, and ENVIRONMENT sections below. If this ref does not exist, it will be quietly created when it is first needed to store a not"
-            ),
-            new GitCommand("prune",
-                "Prune all unreachable objects from the object database",
-                @"git prune [-n] [-v] [--expire <expire>] [--] [<head>...]",
-                @"Note
-In most cases, users should run git gc, which calls git prune. See the section ""NOTES"", below.
-
-
-This runs git fsck --unreachable using all the refs available in refs/, optionally with additional set of objects specified on the command line, and prunes all unpacked objects unreachable from any of these head objects from the object database. In addition, it prunes the unpacked objects that are also found in packs by running git prune-packed. It also removes entries from .git/shallow that are not reachable by any re"
-            ),
-            new GitCommand("pull",
-                "Fetch from and integrate with another repository or a local branch",
-                @"git pull [options] [<repository> [<refspec>...]]",
-                @"Incorporates changes from a remote repository into the current branch. In its default mode, git pull is shorthand for git fetch followed by git merge FETCH_HEAD.
-
-
-More precisely, git pull runs git fetch with the given parameters and calls git merge to merge the retrieved branch heads into the current branch. With --rebase, it runs git rebase instead of git merg"
-            ),
-            new GitCommand("push",
-                "Update remote refs along with associated objects",
-                @"git push [--all | --mirror | --tags] [--follow-tags] [--atomic] [-n | --dry-run] [--receive-pack=<git-receive-pack>]
-	   [--repo=<repository>] [-f | --force] [-d | --delete] [--prune] [-v | --verbose]
-	   [-u | --set-upstream] [--push-option=<string>]
-	   [--[no-]signed|--sign=(true|false|if-asked)]
-	   [--force-with-lease[=<refname>[:<expect>]]]
-	   [--no-verify] [<repository> [<refspec>...]]",
-                @"Updates remote refs using local refs, while sending objects necessary to complete the given refs.
-
-
-You can make interesting things happen to a repository every time you push into it, by setting up hooks there. See documentation for git-receive-pack[1"
-            ),
-            new GitCommand("rebase",
-                "Reapply commits on top of another base tip",
-                @"git rebase [-i | --interactive] [options] [--exec <cmd>] [--onto <newbase>]
-	[<upstream> [<branch>]]
-git rebase [-i | --interactive] [options] [--exec <cmd>] [--onto <newbase>]
-	--root [<branch>]
-git rebase --continue | --skip | --abort | --edit-todo",
-                @"If <branch> is specified, git rebase will perform an automatic git checkout <branch> before doing anything else. Otherwise it remains on the current branch.
-
-
-If <upstream> is not specified, the upstream configured in branch.<name>.remote and branch.<name>.merge options will be used (see git-config[1] for details) and the --fork-point option is assumed. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abor"
-            ),
-            new GitCommand("reflog",
-                "Manage reflog information",
-                @"git reflog <subcommand> <options>",
-                @"The command takes various subcommands, and different options depending on the subcommand:
-
-git reflog [show] [log-options] [<ref>]
-git reflog expire [--expire=<time>] [--expire-unreachable=<time>]
-	[--rewrite] [--updateref] [--stale-fi"
-            ),
-            new GitCommand("remote",
-                "Manage set of tracked repositories",
-                @"git remote [-v | --verbose]
-git remote add [-t <branch>] [-m <master>] [-f] [--[no-]tags] [--mirror=<fetch|push>] <name> <url>
-git remote rename <old> <new>
-git remote remove <name>
-git remote set-head <name> (-a | --auto | -d | --delete | <branch>)
-git remote set-branches [--add] <name> <branch>...
-git remote get-url [--push] [--all] <name>
-git remote set-url [--push] <name> <newurl> [<oldurl>]
-git remote set-url --add [--push] <name> <newurl>
-git remote set-url --delete [--push] <name> <url>
-git remote [-v | --verbose] show [-n] <name>...
-git remote prune [-n | --dry-run] <name>...
-git remote [-v | --verbose] update [-p | --prune] [(<group> | <remote>)...]",
-                @"Manage the set of repositories (""remotes"") whose branches you track."
-            ),
-            new GitCommand("rerere",
-                "Reuse recorded resolution of conflicted merges",
-                @"git rerere [clear|forget <pathspec>|diff|remaining|status|gc]",
-                @"In a workflow employing relatively long lived topic branches, the developer sometimes needs to resolve the same conflicts over and over again until the topic branches are done (either merged to the ""release"" branch, or sent out and accepted upstream"
-            ),
-            new GitCommand("reset",
-                "Reset current HEAD to the specified state",
-                @"git reset [-q] [<tree-ish>] [--] <paths>...
-git reset (--patch | -p) [<tree-ish>] [--] [<paths>...]
-git reset [--soft | --mixed [-N] | --hard | --merge | --keep] [-q] [<commit>]",
-                @"In the first and second form, copy entries from <tree-ish> to the index. In the third form, set the current branch head (HEAD) to <commit>, optionally modifying index and working tree to match. The <tree-ish>/<commit> defaults to HEAD in all form"
-            ),
-            new GitCommand("revert",
-                "Revert some existing commits",
-                @"git revert [--[no-]edit] [-n] [-m parent-number] [-s] [-S[<keyid>]] <commit>...
-git revert --continue
-git revert --quit
-git revert --abort",
-                @"Given one or more existing commits, revert the changes that the related patches introduce, and record some new commits that record them. This requires your working tree to be clean (no modifications from the HEAD commit"
-            ),
-            new GitCommand("rm",
-                "Remove files from the working tree and from the index",
-                @"git rm [-f | --force] [-n] [-r] [--cached] [--ignore-unmatch] [--quiet] [--] <file>...",
-                @"Remove files from the index, or from the working tree and the index. git rm will not remove a file from just your working directory. (There is no option to remove a file only from the working tree and yet keep it in the index; use /bin/rm if you want to do that.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the -f option. When --cached is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index."
-            ),
-            new GitCommand("shortlog",
-                "Summarize git log output",
-                @"git log --pretty=short | git shortlog [<options>]
-git shortlog [<options>] [<revision range>] [[\--] <path>...]",
-                @"Summarizes git log output in a format suitable for inclusion in release announcements. Each commit will be grouped by author and title.
-
-
-Additionally, ""[PATCH]"" will be stripped from the commit descriptio"
-            ),
-            new GitCommand("show",
-                "Show various types of objects",
-                @"git show [options] <object>...",
-                @"Shows one or more objects (blobs, trees, tags and commits).
-
-
-For commits it shows the log message and textual diff. It also presents the merge commit in a special format as produced by git diff-tree --c"
-            ),
-            new GitCommand("stash",
-                "Stash the changes in a dirty working directory away",
-                @"git stash list [<options>]
-git stash show [<stash>]
-git stash drop [-q|--quiet] [<stash>]
-git stash ( pop | apply ) [--index] [-q|--quiet] [<stash>]
-git stash branch <branchname> [<stash>]
-git stash [save [-p|--patch] [-k|--[no-]keep-index] [-q|--quiet]
-	     [-u|--include-untracked] [-a|--all] [<message>]]
-git stash clear
-git stash create [<message>]
-git stash store [-m|--message <message>] [-q|--quiet] <commit>",
-                @"Use git stash when you want to record the current state of the working directory and the index, but want to go back to a clean working directory. The command saves your local modifications away and reverts the working directory to match the HEAD commi"
-            ),
-            new GitCommand("status",
-                "Show the working tree status",
-                @"git status [<options>...] [--] [<pathspec>...]",
-                @"Displays paths that have differences between the index file and the current HEAD commit, paths that have differences between the working tree and the index file, and paths in the working tree that are not tracked by Git (and are not ignored by gitignore[5]). The first are what you would commit by running git commit; the second and third are what you could commit by running git add before running git commit."
-            ),
-            new GitCommand("submodule",
-                "Initialize, update or inspect submodules",
-                @"git submodule [--quiet] add [-b <branch>] [-f|--force] [--name <name>]
-	      [--reference <repository>] [--depth <depth>] [--] <repository> [<path>]
-git submodule [--quiet] status [--cached] [--recursive] [--] [<path>...]
-git submodule [--quiet] init [--] [<path>...]
-git submodule [--quiet] deinit [-f|--force] (--all|[--] <path>...)
-git submodule [--quiet] update [--init] [--remote] [-N|--no-fetch]
-	      [--[no-]recommend-shallow] [-f|--force] [--rebase|--merge]
-	      [--reference <repository>] [--depth <depth>] [--recursive]
-	      [--jobs <n>] [--] [<path>...]
-git submodule [--quiet] summary [--cached|--files] [(-n|--summary-limit) <n>]
-	      [commit] [--] [<path>...]
-git submodule [--quiet] foreach [--recursive] <command>
-git submodule [--quiet] sync [--recursive] [--] [<path>...]",
-                @"Inspects, updates and manages submodules.
-
-
-A submodule allows you to keep another Git repository in a subdirectory of your repository. The other repository has its own history, which does not interfere with the history of the current repository. This can be used to have external dependencies such as third party libraries for exampl"
-            ),
-            new GitCommand("svn",
-                "Bidirectional operation between a Subversion repository and Git",
-                @"git svn <command> [options] [arguments]",
-                @"git svn is a simple conduit for changesets between Subversion and Git. It provides a bidirectional flow of changes between a Subversion and a Git repository.
-
-
-git svn can track a standard Subversion repository, following the common ""trunk/branches/tags"" layout, with the --stdlayout option. It can also follow branches and tags in any layout with the -T/-t/-b options (see options to init below, and also the clone command"
-            ),
-            new GitCommand("tag",
-                "Create, list, delete or verify a tag object signed with GPG",
-                @"git tag [-a | -s | -u <keyid>] [-f] [-m <msg> | -F <file>]
-	<tagname> [<commit> | <object>]
-git tag -d <tagname>...
-git tag [-n[<num>]] -l [--contains <commit>] [--points-at <object>]
-	[--column[=<options>] | --no-column] [--create-reflog] [--sort=<key>]
-	[--format=<format>] [--[no-]merged [<commit>]] [<pattern>...]
-git tag -v <tagname>...",
-                @"Add a tag reference in refs/tags/, unless -d/-l/-v is given to delete, list or verify tags.
-
-
-Unless -f is given, the named tag must not yet exist.
-
-
-If one of -a, -s, or -u <keyid> is passed, the command creates a tag object, and requires a tag message. Unless -m <msg> or -F <file> is given, an editor is started for the user to type in the tag messag"
-            ),
-            #endregion
-        };
-
     }
 }
