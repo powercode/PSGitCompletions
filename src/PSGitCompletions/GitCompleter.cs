@@ -11,8 +11,8 @@ namespace PowerCode
         {
             var elementCount = ast.CommandElements.Count;
             var prevIndex = elementCount - (string.IsNullOrEmpty(wordToComplete) ? 1 : 2);
-            string previosParameterName = null;
-            string previousParameterValue = null;
+            string? previousParameterName = null;
+            string? previousParameterValue = null;
             var doubleDash = ast.CommandElements.FirstOrDefault(c => c.Extent.Text == "--");
             var afterDoubleDash = doubleDash != null && doubleDash.Extent.EndColumnNumber < cursorPosition;
             if (prevIndex < elementCount)
@@ -20,7 +20,7 @@ namespace PowerCode
                 switch (ast.CommandElements[prevIndex])
                 {
                     case CommandParameterAst p:
-                        previosParameterName = p.Extent.Text;
+                        previousParameterName = p.Extent.Text;
                         break;
                     case StringConstantExpressionAst s:
                         previousParameterValue = s.Value;
@@ -34,16 +34,10 @@ namespace PowerCode
             }
             string commandName = ast.CommandElements[1].Extent.Text;
             var gitCommand = GitCommand.GetOptions(commandName);
-            if (gitCommand != null)
-            {
-                return CompleteGitCommand(commandName, gitCommand, previosParameterName, previousParameterValue, wordToComplete, afterDoubleDash);
-            }
-
-            return null;
-
+            return CompleteGitCommand(commandName, gitCommand, previousParameterName, previousParameterValue, wordToComplete, afterDoubleDash);
         }
 
-        private static IList<CompletionResult> CompleteGitCommand(string commandName, GitCommandOption[] gitCommandOptions, string previosParameterName, string previousParameterValue, string wordToComplete, bool afterDoubleDash)
+        private static IList<CompletionResult> CompleteGitCommand(string commandName, GitCommandOption[] gitCommandOptions, string? previousParameterName, string? previousParameterValue, string wordToComplete, bool afterDoubleDash)
         {
             switch (commandName)
             {
@@ -54,7 +48,7 @@ namespace PowerCode
                     }
                     goto default;
                 case "checkout":
-                    if (string.IsNullOrEmpty(previosParameterName) && !wordToComplete.StartsWith("-"))
+                    if (string.IsNullOrEmpty(previousParameterName) && !wordToComplete.StartsWith("-"))
                     {
                         return CompleteBranches(wordToComplete);
                     }
@@ -118,21 +112,19 @@ namespace PowerCode
 
         public void OnImport()
         {
-            using (var ps = PowerShell.Create(RunspaceMode.CurrentRunspace))
-            {
-                ps.AddCommand("Register-ArgumentCompleter")
-                    .AddParameter("-Native", true)
-                    .AddParameter("CommandName", "git")
-                    .AddParameter("ScriptBlock", ScriptBlock.Create("param($wordToComplete, $ast, $cursorPosition) [PowerCode.GitCompleter]::CompleteInput($wordToComplete, $ast, $cursorPosition)"));
-                ps.Invoke();
-            }
+            using var ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
+            ps.AddCommand("Register-ArgumentCompleter")
+                .AddParameter("-Native", true)
+                .AddParameter("CommandName", "git")
+                .AddParameter("ScriptBlock", ScriptBlock.Create("param($wordToComplete, $ast, $cursorPosition) [PowerCode.GitCompleter]::CompleteInput($wordToComplete, $ast, $cursorPosition)"));
+            ps.Invoke();
         }
     }
 
     public struct GitRef
     {
-        public string Commit;
-        public string Name;
+        public string Commit { get; }
+        public string Name { get; }
 
         public GitRef(string commit, string name)
         {

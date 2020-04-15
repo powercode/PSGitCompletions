@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Management.Automation.Language;
 
 namespace PowerCode
 {
@@ -20,7 +19,7 @@ namespace PowerCode
         }
     }
 
-    public class GitRemoteRef : IEqualityComparer<GitRemoteRef>, IComparable<GitRemoteRef>
+    public class GitRemoteRef : IComparable<GitRemoteRef>, IEquatable<GitRemoteRef>, IComparable
     {
         public string Commit { get; }
         public string Remote { get; }
@@ -32,43 +31,66 @@ namespace PowerCode
         {
             Commit = commit;
             var slash = remote.IndexOf("/", 13, StringComparison.OrdinalIgnoreCase);
-            Remote = remote.Substring(13, slash - 13);
+            Remote = remote[13..slash];
             Ref = remote.Substring(slash + 1);
         }
 
-        public bool Equals(GitRemoteRef x, GitRemoteRef y)
+        public bool Equals(GitRemoteRef? other)
         {
-            return x.Commit == y.Commit;
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Commit == other.Commit;
         }
 
-        public int GetHashCode(GitRemoteRef obj)
+        public override bool Equals(object? obj)
         {
-            return Commit.GetHashCode();
+            if (obj is null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GitRemoteRef) obj);
         }
 
-        public int CompareTo(GitRemoteRef other)
+        public override int GetHashCode() => Commit.GetHashCode();
+
+        public static bool operator ==(GitRemoteRef? left, GitRemoteRef? right) => Equals(left, right);
+
+        public static bool operator !=(GitRemoteRef? left, GitRemoteRef? right) => !Equals(left, right);
+
+        public int CompareTo(GitRemoteRef? other)
         {
             if (ReferenceEquals(this, other)) return 0;
-            if (ReferenceEquals(null, other)) return 1;
-            var remoteComparison = string.Compare(Remote, other.Remote, StringComparison.Ordinal);
-            if (remoteComparison != 0) return remoteComparison;
-            return string.Compare(Ref, other.Ref, StringComparison.Ordinal);
+            if (other is null) return 1;
+            return string.Compare(Commit, other.Commit, StringComparison.Ordinal);
         }
+
+        public int CompareTo(object? obj)
+        {
+            if (obj is null) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            return obj is GitRemoteRef other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(GitRemoteRef)}");
+        }
+
+        public static bool operator <(GitRemoteRef? left, GitRemoteRef? right) => Comparer<GitRemoteRef>.Default.Compare(left, right) < 0;
+
+        public static bool operator >(GitRemoteRef? left, GitRemoteRef? right) => Comparer<GitRemoteRef>.Default.Compare(left, right) > 0;
+
+        public static bool operator <=(GitRemoteRef? left, GitRemoteRef? right) => Comparer<GitRemoteRef>.Default.Compare(left, right) <= 0;
+
+        public static bool operator >=(GitRemoteRef? left, GitRemoteRef? right) => Comparer<GitRemoteRef>.Default.Compare(left, right) >= 0;
     }
 
     public class GitRemoteUrl
     {
         public string Name { get; }
-        public string FetchUrl { get; set; }
-        public string PushUrl { get; set; }
+        public string? FetchUrl { get; set; }
+        public string? PushUrl { get; set; }
 
         public GitRemoteUrl(string name)
         {
             Name = name;
         }
-
-
     }
+
     public class Git
     {
 
@@ -81,17 +103,15 @@ namespace PowerCode
 
         private static IEnumerable<string> GitExecute(string command)
         {
-            using (var ps = PowerShell.Create(RunspaceMode.CurrentRunspace))
-            {
-                ps.AddScript(command);
-                return ps.Invoke<string>();
-            }
+            using var ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
+            ps.AddScript(command);
+            return ps.Invoke<string>();
         }
 
         public static IEnumerable<GitRemoteUrl> Remotes()
         {
             var res = Execute("git remove -v");
-            GitRemoteUrl current = null;
+            GitRemoteUrl? current = null;
             foreach (string line in res)
             {
                 var parts = line.Split('\t');
@@ -161,19 +181,10 @@ namespace PowerCode
             return heads;
         }
 
-        public static IEnumerable<string> Files(string match)
-        {
-            return Execute($"git ls-files --exclude-standard {match}*");
-        }
-        public static IEnumerable<string> CommitableFiles(string match)
-        {
-            return Execute("git diff-index --name-only --relative HEAD");
-        }
+        public static IEnumerable<string> Files(string match) => Execute($"git ls-files --exclude-standard {match}*");
 
-        public static IEnumerable<GitLog> Log(int count = 50)
-        {
-            return Execute($"git log --oneline -{count}").Select(l =>new GitLog(l.Substring(0,8), l.Substring(9)));
+        public static IEnumerable<string> CommitableFiles(string match) => Execute("git diff-index --name-only --relative HEAD");
 
-        }
+        public static IEnumerable<GitLog> Log(int count = 50) => Execute($"git log --oneline -{count}").Select(l =>new GitLog(l.Substring(0,8), l.Substring(9)));
     }
 }
