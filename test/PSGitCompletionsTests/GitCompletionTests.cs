@@ -6,9 +6,8 @@ namespace GitCompletionTests
 {
     public class GitCompletionTests
     {
-        private string[] GetGitLog(string command)
-        {
-            return new[]
+        private static string[] GetGitLog(string command) =>
+            new[]
             {
                 "afcff36f adding resharper settings to gitignore",
                 "2a9ace83 Adding tests and fixing issues",
@@ -31,11 +30,9 @@ namespace GitCompletionTests
                 "4697dd2b Adding public ValidRootDrives property to ValidateDrive (#3510)",
                 "753b1965 Fix crash at startup when env:HOME not set (#3437)"
             };
-        }
 
-        private string[] GetGitRemoteRefs(string command)
-        {
-            return new[]
+        private static string[] GetGitRemoteRefs(string command) =>
+            new[]
             {
                 "b80765d703f2e3766b4838f14455c40da255fa88 refs/remotes/origin/ForEach",
                 "636a14cff5672bddc638786a42802681bc4d382d refs/remotes/origin/HEAD",
@@ -44,18 +41,15 @@ namespace GitCompletionTests
                 "1c2c3a223f024371677846d2a8b5e4a6079e8cd7 refs/remotes/upstream/import-datafile",
                 "38f6dad857ee8a70a1d7b23c67f2af32ffe50d40 refs/remotes/upstream/make-csproj-build"
             };
-        }
 
-        private string[] GetGitRemoteUrl(string command)
-        {
-            return new[]
+        private static string[] GetGitRemoteUrl(string command) =>
+            new[]
             {
                 "origin	https://github.com/powercode/PowerShell (fetch)",
                 "origin	https://github.com/powercode/PowerShell (push)",
                 "upstream	https://github.com/powershell/PowerShell (fetch)",
                 "upstream	https://github.com/powershell/PowerShell (push)"
             };
-        }
 
         [Fact]
         public void CanCompleteGetGitFetchRemote()
