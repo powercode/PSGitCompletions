@@ -5,7 +5,6 @@ using System.Management.Automation.Runspaces;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PowerCode;
-using Xunit;
 
 namespace GitCompletionTests
 {
@@ -143,7 +142,7 @@ namespace GitCompletionTests
         [TestMethod]
         public void TestPSTabExpansion() {
             InitialSessionState iss = InitialSessionState.CreateDefault();
-            var codeBaseUrl = new Uri(typeof(Git).Assembly.CodeBase);
+            var codeBaseUrl = new Uri(typeof(Git).Assembly.Location);
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
             //iss.ImportPSModule(new []{codeBasePath});
             //iss.Commands.Add(new SessionStateFunctionEntry("TabExpansion2", TabExpansionFunction));
