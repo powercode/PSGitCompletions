@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PowerCode;
 
 namespace GitCompletionTests
 {
+    [TestClass]
     public class GitCompletionTests
     {
         [TestMethod]
@@ -41,7 +41,7 @@ namespace GitCompletionTests
 
 
         [TestMethod]
-        public void CanCompletAddFiles()
+        public void CanCompleteAddFiles()
         {
             using (new GitExecuterScope(Git.GitExecuter))
             {
@@ -146,37 +146,30 @@ namespace GitCompletionTests
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
             //iss.ImportPSModule(new []{codeBasePath});
             //iss.Commands.Add(new SessionStateFunctionEntry("TabExpansion2", TabExpansionFunction));
-            using (var ps = PowerShell.Create(iss)) {
-                Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e=>e.Exception.Message)));
+            using var ps = PowerShell.Create(iss);
+            Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e=>e.Exception.Message)));
 
-                ps.AddScript($"Import-Module {codeBasePath}", true).Invoke();
-                Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e => e.Exception.Message)));
+            ps.AddScript($"Import-Module {codeBasePath}", true).Invoke();
+            Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e => e.Exception.Message)));
 
-                var cmd = "git add -";
-                ps.AddScript($"TabExpansion2 -inputScript '{cmd}' -cursorColumn {cmd.Length}");
+            var cmd = "git add -";
+            ps.AddScript($"TabExpansion2 -inputScript '{cmd}' -cursorColumn {cmd.Length}");
 
-                var res = (CommandCompletion)(ps.Invoke()[0].BaseObject);
-                Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e => e.Exception.Message)));
-                Assert.IsTrue(res.CompletionMatches.Count > 0);
-                Assert.AreEqual("--", res.CompletionMatches[0].CompletionText);
-            }
+            var res = (CommandCompletion)(ps.Invoke()[0].BaseObject);
+            Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e => e.Exception.Message)));
+            Assert.IsTrue(res.CompletionMatches.Count > 0);
+            Assert.AreEqual("--", res.CompletionMatches[0].CompletionText);
         }
 
         string[] FakeGit(string command) {
-            switch (command) {
-                 case "git for-each-ref '--format=%(refname:strip=2)' 'refs/heads/*' 'refs/heads/*/**'":
-                     return GitHeads;
-                case "git for-each-ref '--format=%(refname:strip=2)' 'refs/tags/*' 'refs/tags/*/**'":
-                    return GitTags;
-                case "git status --porcelain":
-                    return GitStatus;
-                case "git for-each-ref '--format=%(objectname) %(refname)' refs/remotes/*/*":
-                    return GitRemoteRefs;
-                case "git remote -v":
-                    return GitRemoteurl;
-
-            }
-            throw new ArgumentException(command);
+            return command switch {
+                "git for-each-ref '--format=%(refname:strip=2)' 'refs/heads/*' 'refs/heads/*/**'" => GitHeads,
+                "git for-each-ref '--format=%(refname:strip=2)' 'refs/tags/*' 'refs/tags/*/**'" => GitTags,
+                "git status --porcelain" => GitStatus,
+                "git for-each-ref '--format=%(objectname) %(refname)' refs/remotes/*/*" => GitRemoteRefs,
+                "git remote -v" => GitRemoteurl,
+                _ => throw new ArgumentException(command)
+            };
         }
 
         private static readonly string[] GitHeads= {
