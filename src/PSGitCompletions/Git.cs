@@ -157,6 +157,8 @@ namespace PowerCode
             return heads;
         }
 
+        public static IEnumerable<string> LsFiles(string match) => Execute($"git ls-files -- {match}");
+
         public static IEnumerable<string> Tags(string match)
         {
             var heads = Execute($"git for-each-ref '--format=%(refname:strip=2)' 'refs/tags/{match}*' 'refs/tags/{match}*/**'").ToArray();

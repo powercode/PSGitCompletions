@@ -73,7 +73,7 @@ namespace GitCompletionTests
             {
                 Git.GitExecuter = FakeGit;
                 var res = "git diff -- ".CompleteInput();
-                Assert.AreEqual("src/PSGitCompletions/Git.cs", res[0].CompletionText);
+                Assert.AreEqual(".gitattributes", res[0].CompletionText);
             }
         }
 
@@ -170,6 +170,7 @@ namespace GitCompletionTests
                 "git remote -v" => GitRemoteurl,
                 "git diff-index --name-only --relative HEAD" => GitDiffIndexName,
                 "git log --oneline -50" => GetGitLog,
+                "git ls-files -- " => GetGitLsFiles,
                 _ => throw new ArgumentException(command)
             };
         }
@@ -209,10 +210,42 @@ namespace GitCompletionTests
                 "?? GitTabExpansion.ps1"
         };
 
+
         private static readonly string[] GitDiffIndexName = {
             "src/PSGitCompletions/Git.cs",
             "src/PSGitCompletions/GitCompleter.cs",
             "test/PSGitCompletionsTests/GitCompletionTests.cs"
+        };
+
+        private static readonly string[] GetGitLsFiles = {
+            ".gitattributes",
+            ".gitignore",
+            "Git.cs",
+            "GitCommand.cs",
+            "GitCompleter.cs",
+            "GitCompletionExtensions.cs",
+            "GitRemoteRef.cs",
+            "GitRemoteUrl.cs",
+            "GitStatusPath.cs",
+            "LICENSE",
+            "PSGitCompletions.csproj",
+            "PSGitCompletions.sln",
+            "PSGitCompletions.sln.DotSettings",
+            "Properties/AssemblyInfo.cs",
+            "README.md",
+            "packages.config",
+            "src/PSGitCompletions/CompleteCommandParameters.cs",
+            "src/PSGitCompletions/Git.cs",
+            "src/PSGitCompletions/GitCommand.cs",
+            "src/PSGitCompletions/GitCommandOption.cs",
+            "src/PSGitCompletions/GitCompleter.cs",
+            "src/PSGitCompletions/GitCompletionExtensions.cs",
+            "src/PSGitCompletions/GitLog.cs",
+            "src/PSGitCompletions/PSGitCompletions.csproj",
+            "test/PSGitCompletionsTests/CompletionTestExtensions.cs",
+            "test/PSGitCompletionsTests/CreateCompletionInfoTests.cs",
+            "test/PSGitCompletionsTests/GitCompletionTests.cs",
+            "test/PSGitCompletionsTests/PSGitCompletionsTests.csproj"
         };
 
         private static readonly string[] GitRemoteRefs = {

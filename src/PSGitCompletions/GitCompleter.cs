@@ -65,11 +65,8 @@ namespace PowerCode
                     }
 
                     goto default;
-                case "diff":
+                case "diff": return CompleteDiff(completeCommandParameters);
                 case "rebase":
-                    if (completeCommandParameters.AfterDoubleDash) {
-                        return CompleteModifiedFiles(wordToComplete);
-                    }
                     if (wordToComplete.IsEmpty())
                         return Git.Log()
                             .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
@@ -84,6 +81,26 @@ namespace PowerCode
                     return GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions, wordToComplete: wordToComplete);
             }
         }
+
+        private static IList<CompletionResult> CompleteDiff(CompleteCommandParameters completeCommandParameters) {
+            var wordToComplete = completeCommandParameters.WordToComplete;
+            if (completeCommandParameters.AfterDoubleDash) {
+
+                return Git.LsFiles(wordToComplete).Select(f=>new CompletionResult(f)).ToList();
+            }
+
+            if (wordToComplete.IsEmpty())
+                return Git.Log()
+                    .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
+                    .ToList();
+            if (!completeCommandParameters.IsCompletingCommand)
+                return Git.Log()
+                    .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseStartsWith(value: wordToComplete))
+                    .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
+                    .ToList();
+            return GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete);
+        }
+
 
         private static IList<CompletionResult> CompleteCheckout(CompleteCommandParameters completeCommandParameters) {
             var wordToComplete = completeCommandParameters.WordToComplete;
