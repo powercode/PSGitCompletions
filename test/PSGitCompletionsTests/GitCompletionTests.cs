@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Runtime.ExceptionServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PowerCode;
 
@@ -22,7 +23,7 @@ namespace GitCompletionTests
         [TestMethod]
         public void CanCompleteGitCommandPart()
         {
-            var res = "git ad".CompleteInput("ad");
+            var res = "git ad".CompleteInput();
             Assert.AreEqual("add", res[0].CompletionText);
         }
 
@@ -40,26 +41,28 @@ namespace GitCompletionTests
         }
 
 
-        [TestMethod]
-        public void CanCompleteAddFiles()
+        [DataTestMethod]
+        [DataRow("git add ", "src/PSGitCompletions/Git.cs")]
+        [DataRow("git add -", "--")]
+        public void CanCompleteAddFiles(string command, string firstResult)
         {
             using (new GitExecuterScope(Git.GitExecuter))
             {
                 Git.GitExecuter = FakeGit;
-                var res = "git add ".CompleteInput();
-                Assert.AreEqual("Git.cs", res[0].CompletionText);
+                var res = command.CompleteInput();
+                Assert.AreEqual(firstResult, res[0].CompletionText);
             }
         }
 
         [TestMethod]
-        public void CanCompleteGitDiffOptions()
+        public void CanCompleteGitDiffCommits()
         {
             using (new GitExecuterScope(Git.GitExecuter))
             {
                 Git.GitExecuter = FakeGit;
                 var res = "git diff ".CompleteInput();
-                Assert.AreEqual("ext-method", res[0].CompletionText);
-                Assert.AreEqual("overload-err", res[4].ToolTip);
+                Assert.AreEqual("afcff36f", res[0].CompletionText);
+                Assert.AreEqual("adding resharper settings to gitignore", res[0].ToolTip);
             }
         }
 
@@ -70,8 +73,7 @@ namespace GitCompletionTests
             {
                 Git.GitExecuter = FakeGit;
                 var res = "git diff -- ".CompleteInput();
-                Assert.AreEqual("Git.cs", res[0].CompletionText);
-                Assert.AreEqual("GitStatusPath.cs", res[4].ToolTip);
+                Assert.AreEqual("src/PSGitCompletions/Git.cs", res[0].CompletionText);
             }
         }
 
@@ -81,21 +83,23 @@ namespace GitCompletionTests
             using (new GitExecuterScope(Git.GitExecuter))
             {
                 Git.GitExecuter = FakeGit;
-                var completions = "git fetch origin".CompleteInput();
-                Assert.AreEqual(7, completions.Count);
-                Assert.AreEqual("ext-method", completions[0].CompletionText);
+                var completions = "git fetch origin ".CompleteInput();
+                Assert.AreEqual(2, completions.Count);
+                Assert.AreEqual("origin", completions[0].CompletionText);
             }
         }
 
-        [TestMethod]
-        public void CanCompleteCheckoutFiles()
+        [DataTestMethod]
+        [DataRow("git checkout -- ", "src/PSGitCompletions/Git.cs", 3)]
+        [DataRow("git checkout ", "ext-method", 10)]
+        public void CanCompleteCheckoutFiles(string command, string firstResult, int resultCount)
         {
             using (new GitExecuterScope(Git.GitExecuter))
             {
                 Git.GitExecuter = FakeGit;
-                var completions = "git checkout -- ".CompleteInput();
-                Assert.AreEqual(7, completions.Count);
-                Assert.AreEqual("Git.cs", completions[0].CompletionText);
+                var completions = command.CompleteInput();
+                Assert.AreEqual(resultCount, completions.Count);
+                Assert.AreEqual(firstResult, completions[0].CompletionText);
             }
         }
 
@@ -113,20 +117,6 @@ namespace GitCompletionTests
         }
 
         [TestMethod]
-        public void CanGetGitRemoteRefs()
-        {
-            using (new GitExecuterScope(Git.GitExecuter))
-            {
-                Git.GitExecuter = FakeGit;
-                var remoteRefs = Git.RemoteRefs().ToArray();
-                Assert.AreEqual("ext-method", remoteRefs[0].Ref);
-                Assert.AreEqual("f807df7d865824da7db794f311263c0bc917845f", remoteRefs[2].Commit);
-                Assert.AreEqual("origin", remoteRefs[1].Remote);
-                Assert.AreEqual("origin/master", remoteRefs[2].RemoteRef);
-            }
-        }
-
-        [TestMethod]
         public void CanGetGitRemoteUrls()
         {
             using (new GitExecuterScope(Git.GitExecuter))
@@ -139,12 +129,23 @@ namespace GitCompletionTests
             }
         }
 
-        [TestMethod]
-        public void TestPSTabExpansion() {
+        [DataTestMethod]
+        [DataRow("git diff ", "afcff36f")]
+        [DataRow("git -P ", "add")]
+        [DataRow("git ", "add")]
+        [DataRow("git add ", "src/PSGitCompletions/Git.cs")]
+        [DataRow("git add -", "--")]
+        [DataRow("git add -A ", "src/PSGitCompletions/Git.cs")]
+        [DataRow("git add -- ", "src/PSGitCompletions/Git.cs")]
+        [DataRow("git -P add ", "src/PSGitCompletions/Git.cs")]
+        [DataRow("git -P ad", "add")]
+        public void TestPSTabExpansion(string command, string firstMatch) {
+            using var gitExecuterScope = new GitExecuterScope(Git.GitExecuter);
+            Git.GitExecuter = FakeGit;
             InitialSessionState iss = InitialSessionState.CreateDefault();
             var codeBaseUrl = new Uri(typeof(Git).Assembly.Location);
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            //iss.ImportPSModule(new []{codeBasePath});
+            iss.ImportPSModule(new []{codeBasePath});
             //iss.Commands.Add(new SessionStateFunctionEntry("TabExpansion2", TabExpansionFunction));
             using var ps = PowerShell.Create(iss);
             Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e=>e.Exception.Message)));
@@ -152,13 +153,12 @@ namespace GitCompletionTests
             ps.AddScript($"Import-Module {codeBasePath}", true).Invoke();
             Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e => e.Exception.Message)));
 
-            var cmd = "git add -";
-            ps.AddScript($"TabExpansion2 -inputScript '{cmd}' -cursorColumn {cmd.Length}");
+            ps.AddScript($"TabExpansion2 -inputScript '{command}' -cursorColumn {command.Length}");
 
             var res = (CommandCompletion)(ps.Invoke()[0].BaseObject);
             Assert.IsFalse(ps.HadErrors, string.Join(Environment.NewLine, ps.Streams.Error.ReadAll().Select(e => e.Exception.Message)));
             Assert.IsTrue(res.CompletionMatches.Count > 0);
-            Assert.AreEqual("--", res.CompletionMatches[0].CompletionText);
+            Assert.AreEqual(firstMatch, res.CompletionMatches[0].CompletionText);
         }
 
         string[] FakeGit(string command) {
@@ -168,6 +168,8 @@ namespace GitCompletionTests
                 "git status --porcelain" => GitStatus,
                 "git for-each-ref '--format=%(objectname) %(refname)' refs/remotes/*/*" => GitRemoteRefs,
                 "git remote -v" => GitRemoteurl,
+                "git diff-index --name-only --relative HEAD" => GitDiffIndexName,
+                "git log --oneline -50" => GetGitLog,
                 _ => throw new ArgumentException(command)
             };
         }
@@ -205,8 +207,13 @@ namespace GitCompletionTests
                 "AM GitStatusPath.cs",
                 " M PSGitCompletions.csproj",
                 "?? GitTabExpansion.ps1"
+        };
 
-            };
+        private static readonly string[] GitDiffIndexName = {
+            "src/PSGitCompletions/Git.cs",
+            "src/PSGitCompletions/GitCompleter.cs",
+            "test/PSGitCompletionsTests/GitCompletionTests.cs"
+        };
 
         private static readonly string[] GitRemoteRefs = {
             "f807df7d865824da7db794f311263c0bc917845f refs/remotes/origin/HEAD",
@@ -243,6 +250,20 @@ namespace GitCompletionTests
             "18c28f8f Fix markdown lint issues for SSH Remoting demo and enable related tests (#3484)",
             "4697dd2b Adding public ValidRootDrives property to ValidateDrive (#3510)",
             "753b1965 Fix crash at startup when env:HOME not set (#3437)"
+        };
+
+        private static readonly string[] GetGitAlias = {
+            "alias.dt difftool",
+            "alias.mt mergetool",
+            "alias.f fetch",
+            "alias.cdiff diff --compact-summary",
+            "alias.fo fetch origin",
+            "alias.fu fetch upstream",
+            "alias.l log --oneline",
+            "alias.lg log --oneline --graph --decorate",
+            "alias.s status",
+            "alias.sb status -s -b",
+            "alias.fdiff difftool --dir-diff --tool=bc --no-prompt"
         };
 
         private static readonly string[] GitRemoteurl =

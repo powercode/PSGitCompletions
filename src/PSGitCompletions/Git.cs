@@ -33,7 +33,7 @@ namespace PowerCode
             Commit = commit;
             var slash = remote.IndexOf("/", 13, comparisonType: StringComparison.OrdinalIgnoreCase);
             Remote = remote[13..slash];
-            Ref = remote.Substring(slash + 1);
+            Ref = remote[(slash + 1)..];
         }
 
         public int CompareTo(object? obj)
@@ -94,7 +94,7 @@ namespace PowerCode
 
     public class Git
     {
-        public static Func<string, IEnumerable<string>> GitExecuter = GitExecute;
+        public static Func<string, IEnumerable<string>> GitExecuter { get; set; } = GitExecute;
 
         private static IEnumerable<string> Execute(string command) => GitExecuter(arg: command);
 
@@ -107,7 +107,7 @@ namespace PowerCode
 
         public static IEnumerable<GitRemoteUrl> Remotes()
         {
-            var res = Execute("git remove -v");
+            var res = Execute("git remote -v");
             GitRemoteUrl? current = null;
             foreach (var line in res)
             {
@@ -135,19 +135,19 @@ namespace PowerCode
         public static IEnumerable<GitRemoteRef> RemoteRefs()
         {
             return Execute("git for-each-ref '--format=%(objectname) %(refname)' refs/remotes/*/*")
-                .Select(l => new GitRemoteRef(l.Substring(0, 40), l.Substring(41)));
+                .Select(l => new GitRemoteRef(l.Substring(0, 40), l[41..]));
         }
 
         public static IEnumerable<GitRef> Refs(string match)
         {
             var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
-            foreach (var line in res) yield return new GitRef(line.Substring(0, 40), line.Substring(41));
+            foreach (var line in res) yield return new GitRef(line[.. 40], line[41..]);
         }
 
         public static IEnumerable<GitRef> Remotes(string match)
         {
             var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
-            foreach (var line in res) yield return new GitRef(line.Substring(0, 40), line.Substring(41));
+            foreach (var line in res) yield return new GitRef(line.Substring(0, 40), line[41..]);
         }
 
         public static IEnumerable<string> Heads(string match)
@@ -168,6 +168,6 @@ namespace PowerCode
 
         public static IEnumerable<string> CommitableFiles(string match) => Execute("git diff-index --name-only --relative HEAD");
 
-        public static IEnumerable<GitLog> Log(int count = 50) => Execute($"git log --oneline -{count}").Select(l => new GitLog(l.Substring(0, 8), l.Substring(9)));
+        public static IEnumerable<GitLog> Log(int count = 50) => Execute($"git log --oneline -{count}").Select(l => new GitLog(l.Substring(0, 8), l[9..]));
     }
 }

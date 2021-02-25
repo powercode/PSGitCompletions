@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("PSGitCompletionsTests")]
 
 namespace PowerCode
 {
+
     public class GitCompleter : IModuleAssemblyInitializer
     {
         public void OnImport()
@@ -20,47 +25,34 @@ namespace PowerCode
 
         public static IList<CompletionResult> CompleteInput(string wordToComplete, CommandAst ast, int cursorPosition)
         {
-            var elementCount = ast.CommandElements.Count;
-            var prevIndex = elementCount - (string.IsNullOrEmpty(value: wordToComplete) ? 1 : 2);
-            string? previousParameterName = null;
-            string? previousParameterValue = null;
-            var doubleDash = ast.CommandElements.FirstOrDefault(c => c.Extent.Text == "--");
-            var afterDoubleDash = doubleDash != null && doubleDash.Extent.EndColumnNumber < cursorPosition;
-            if (prevIndex < elementCount)
-                switch (ast.CommandElements[index: prevIndex])
-                {
-                    case CommandParameterAst p:
-                        previousParameterName = p.Extent.Text;
-                        break;
-                    case StringConstantExpressionAst s:
-                        previousParameterValue = s.Value;
-                        break;
-                }
-
-            if (previousParameterValue.IsGitCommand()) return CompleteGitCommands(wordToComplete: wordToComplete);
-            var commandName = ast.CommandElements[1].Extent.Text;
-            var gitCommandOptions = GitCommand.GetOptions(name: commandName);
-            return CompleteGitCommand(commandName: commandName, gitCommandOptions: gitCommandOptions, previousParameterName: previousParameterName, previousParameterValue: previousParameterValue,
-                wordToComplete: wordToComplete, afterDoubleDash: afterDoubleDash);
+            var completeCommandParameters = CompleteCommandParameters.Create(wordToComplete, ast, cursorPosition);
+            if (completeCommandParameters.IsCompletingCommand) {
+                return CompleteGitCommands(wordToComplete: wordToComplete);
+            }
+            return CompleteGitCommand(completeCommandParameters);
         }
 
-        private static IList<CompletionResult> CompleteGitCommand(string commandName, GitCommandOption[] gitCommandOptions, string? previousParameterName, string? previousParameterValue,
-            string wordToComplete, bool afterDoubleDash)
-        {
-            switch (commandName)
+
+        private static IList<CompletionResult> CompleteGitCommand(CompleteCommandParameters completeCommandParameters) {
+            var wordToComplete = completeCommandParameters.WordToComplete;
+            bool isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
+            switch (completeCommandParameters.CommandName)
             {
+                case "add":
+                    if (!isCompletingParameterName) return CompleteModifiedFiles(wordToComplete: wordToComplete);
+                    goto default;
                 case "branch":
-                    if (!wordToComplete.StartsWith('-')) return CompleteBranches(wordToComplete: wordToComplete);
+                    if (!isCompletingParameterName) return CompleteBranches(wordToComplete: wordToComplete);
                     goto default;
                 case "checkout":
-                    if (string.IsNullOrEmpty(value: previousParameterName) && !wordToComplete.StartsWith("-")) return CompleteBranches(wordToComplete: wordToComplete);
+                    if (string.IsNullOrEmpty(value: completeCommandParameters.PreviousParameterName) && !isCompletingParameterName) return CompleteCheckout(completeCommandParameters);
                     goto default;
                 case "fetch":
-                    if (!wordToComplete.StartsWith('-'))
+                    if (!isCompletingParameterName)
                     {
-                        if (!string.IsNullOrEmpty(value: previousParameterValue) && previousParameterValue != commandName)
+                        if (!string.IsNullOrEmpty(value: completeCommandParameters.PreviousParameterValue) && completeCommandParameters.PreviousParameterValue != completeCommandParameters.CommandName)
                             return Git.RemoteRefs()
-                                .Where(r => r.Remote.IgnoreCaseEquals(value: previousParameterValue) && r.Ref.IgnoreCaseStartsWith(value: wordToComplete))
+                                .Where(r => r.Remote.IgnoreCaseEquals(value: completeCommandParameters.PreviousParameterValue) && r.Ref.IgnoreCaseStartsWith(value: wordToComplete))
                                 .Select(c => new CompletionResult(completionText: c.Ref, listItemText: c.Ref, resultType: CompletionResultType.ParameterValue,
                                     toolTip: c.RemoteRef))
                                 .ToList();
@@ -75,19 +67,31 @@ namespace PowerCode
                     goto default;
                 case "diff":
                 case "rebase":
+                    if (completeCommandParameters.AfterDoubleDash) {
+                        return CompleteModifiedFiles(wordToComplete);
+                    }
                     if (wordToComplete.IsEmpty())
                         return Git.Log()
                             .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
                             .ToList();
-                    else if (!wordToComplete.StartsWith('-'))
+                    else if (!isCompletingParameterName)
                         return Git.Log()
                             .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseStartsWith(value: wordToComplete))
                             .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
                             .ToList();
                     goto default;
                 default:
-                    return GitOptionsToCompletionResults(gitCommandOptions: gitCommandOptions, wordToComplete: wordToComplete);
+                    return GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions, wordToComplete: wordToComplete);
             }
+        }
+
+        private static IList<CompletionResult> CompleteCheckout(CompleteCommandParameters completeCommandParameters) {
+            var wordToComplete = completeCommandParameters.WordToComplete;
+            return completeCommandParameters.AfterDoubleDash ? CompleteModifiedFiles(wordToComplete) : CompleteBranches(wordToComplete);
+        }
+
+        private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete) {
+            return Git.CommitableFiles(wordToComplete).Select(file => new CompletionResult(file)).ToArray();
         }
 
         private static IList<CompletionResult> CompleteBranches(string wordToComplete)

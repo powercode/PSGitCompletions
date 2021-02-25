@@ -687,7 +687,7 @@ If ':<funcname>' is given in place of <start> and <end>, it is a regular express
                     new GitCommandOption("-v", @"-v", @"Report progress to stderr."), new GitCommandOption("--verbose", @"--verbose", @"Report progress to stderr."),
                     new GitCommandOption("--worktree-attributes", @"--worktree-attributes", @"Look for attributes in .gitattributes files in the working tree as well (see ATTRIBUTES).")
                 },
-                "bisect" => new GitCommandOption[] { },
+                "bisect" => System.Array.Empty<GitCommandOption>(),
                 "blame" => new[]
                 {
                     new GitCommandOption("--abbrev", @"--abbrev=<n>",
@@ -833,7 +833,7 @@ This behavior is the default when the start point is a remote-tracking branch. S
                     new GitCommandOption("-vv", @"-vv",
                         @"When in list mode, show sha1 and commit subject line for each head, along with relationship to upstream branch (if any). If given twice, print the name of the upstream branch, as well (see also git remote show <remote>).")
                 },
-                "bundle" => new GitCommandOption[] { },
+                "bundle" => System.Array.Empty<GitCommandOption>(),
                 "checkout" => new[]
                 {
                     new GitCommandOption("--[no-]progress", @"--[no-]progress",
@@ -886,7 +886,7 @@ This is because rebase is used in a workflow that treats the history at the remo
                     new GitCommandOption("--track", @"--track", @"When creating a new branch, set up ""upstream"" configuration. See ""--track"" in git-branch[1] for details.
 If no -b option is given, the name of the new branch will be derived from the remote-tracking branch, by looking at the local part of the refspec configured for the corresponding remote, and then stripping the initial part up to the ""*"". This would tell us to use ""hack"" as the local branch when branching off of ""origin/hack"" (or ""remotes/origin/hack"", or even ""refs/remotes/origin/hack""). If the given name has no slash, or the above guessing results in an empty name, the guessing is aborted. You can explicitly give a name with -b in such a case.")
                 },
-                "cherry" => new GitCommandOption[] { },
+                "cherry" => System.Array.Empty<GitCommandOption>(),
                 "cherry-pick" => new[]
                 {
                     new GitCommandOption("--abort", @"--abort", @"Cancel the operation and return to the pre-sequence state."),
@@ -931,7 +931,7 @@ This is useful when cherry-picking more than one commits'' effect to your index 
                         @"When recording the commit, append a line that says ""(cherry picked from commit ...)"" to the original commit message in order to indicate which commit this change was cherry-picked from. This is done only for cherry picks without conflicts. Do not use this option if you are cherry-picking from your private branch because the information is useless to the recipient. If on the other hand you are cherry-picking between two publicly visible branches (e.g. backporting a fix to a maintenance branch for an older release from a development branch), adding this information can be useful."),
                     new GitCommandOption("-X<option>", @"-X<option>", @"Pass the merge strategy-specific option through to the merge strategy. See git-merge[1] for details.")
                 },
-                "citool" => new GitCommandOption[] { },
+                "citool" => System.Array.Empty<GitCommandOption>(),
                 "clean" => new[]
                 {
                     new GitCommandOption("-d", @"-d",
@@ -1803,7 +1803,7 @@ If the number of packs exceeds the value of gc.autoPackLimit, then existing pack
                         @"Match the pattern only at word boundary (either begin at the beginning of a line, or preceded by a non-word character; end at the end of a line or followed by a non-word character)."),
                     new GitCommandOption("-z", @"-z", @"Output \\0 instead of the character that normally follows a file name.")
                 },
-                "gui" => new GitCommandOption[] { },
+                "gui" => System.Array.Empty<GitCommandOption>(),
                 "help" => new[]
                 {
                     new GitCommandOption("-a", @"-a", @"Prints all the available commands on the standard output. This option overrides any given command or guide name."),
@@ -2809,7 +2809,7 @@ This computation involves traversing all the reachable objects, i.e. it has the 
                     new GitCommandOption("-v", @"-v", @"Be a little more verbose and show remote url after name. NOTE: This must be placed between remote and subcommand."),
                     new GitCommandOption("--verbose", @"--verbose", @"Be a little more verbose and show remote url after name. NOTE: This must be placed between remote and subcommand.")
                 },
-                "rerere" => new GitCommandOption[] { },
+                "rerere" => System.Array.Empty<GitCommandOption>(),
                 "reset" => new[]
                 {
                     new GitCommandOption("--hard", @"--hard", @"Resets the index and working tree. Any changes to tracked files in the working tree since <commit> are discarded."),
@@ -3103,7 +3103,7 @@ The regex can also be set via a diff driver or configuration option, see gitattr
 Also, when --raw or --numstat has been given, do not munge pathnames and use NULs as output field terminators.
 Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with \\t, \\n, \\"", and \\\\, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred.")
                 },
-                "stash" => new GitCommandOption[] { },
+                "stash" => System.Array.Empty<GitCommandOption>(),
                 "status" => new[]
                 {
                     new GitCommandOption("-b", @"-b", @"Show the branch and tracking info even in short-format."),
@@ -3433,7 +3433,7 @@ This option is only applicable when listing tags without annotation lines."),
                     new GitCommandOption("-v", @"-v", @"Verify the GPG signature of the given tag names."),
                     new GitCommandOption("--verify", @"--verify", @"Verify the GPG signature of the given tag names.")
                 },
-                _ => new GitCommandOption[] { }
+                _ => System.Array.Empty<GitCommandOption>()
             };
         }
     }
