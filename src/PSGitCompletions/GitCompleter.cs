@@ -65,8 +65,9 @@ namespace PowerCode
                     }
 
                     goto default;
-                case "diff": return CompleteDiff(completeCommandParameters);
-                case "difftool": return CompleteDiff(completeCommandParameters);
+                case "diff":
+                case "difftool":
+                    return CompleteDiff(completeCommandParameters);
                 case "rebase":
                     if (wordToComplete.IsEmpty())
                         return Git.Log()
@@ -127,7 +128,7 @@ namespace PowerCode
         private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete) {
             return Git.Status()
                 .Where(s=>s.WorkTreeStatus != GitStatusKind.None && s.Path.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))
-                .Select(status => new CompletionResult(status.Path, status.Path, CompletionResultType.ProviderItem, $"status: {status.IndexStatus}"))
+                .Select(status => new CompletionResult(status.Path, status.Path, CompletionResultType.ProviderItem, $"status: {status.WorkTreeStatus}"))
                 .ToArray();
         }
 
