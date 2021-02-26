@@ -107,5 +107,9 @@ namespace PowerCode
                     return (alias, command, parameters);
                 }).ToList();
         }
+
+        public static IEnumerable<string> GetCommitFiles(string? commit) {
+            return commit is null ? Enumerable.Empty<string>() : Execute($"git diff {commit}~1 {commit} --name-only").ToArray();
+        }
     }
 }

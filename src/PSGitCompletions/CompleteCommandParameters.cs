@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation.Language;
 
@@ -31,6 +32,13 @@ namespace PowerCode {
         public int CursorPosition { get; }
 
         public bool IsCompletingParameterName { get; }
+
+        public IList<(string token, int index)> GetPositionalParameters() {
+            return Ast.CommandElements.Select((ce, i) => (ce.Extent.Text, i))
+                .Where(t => !t.Text.StartsWith('-'))
+                .SkipWhile(t => t.Text != CommandName)
+                .Skip(1).ToList();
+        }
 
         internal static CompleteCommandParameters Create(string wordToComplete, CommandAst ast, int cursorPosition)
         {

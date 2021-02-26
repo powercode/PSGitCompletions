@@ -9,6 +9,8 @@ namespace PowerCode
 
         public static bool IgnoreCaseStartsWith(this string str, string value) => str.StartsWith(value: value, comparisonType: StringComparison.OrdinalIgnoreCase);
 
+        public static bool IgnoreCaseContains(this string str, string value) => str.Contains(value: value, comparisonType: StringComparison.OrdinalIgnoreCase);
+
         public static bool IsEmpty(this string? str) => string.IsNullOrEmpty(value: str);
 
         public static bool IsGitCommand(this string? str) => !string.IsNullOrEmpty(value: str) && str.IndexOf("git", comparisonType: StringComparison.OrdinalIgnoreCase) != -1;
