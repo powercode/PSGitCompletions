@@ -16,5 +16,7 @@
     CmdletsToExport   = ''
     VariablesToExport = ''
     AliasesToExport   = ''
+
+    FileList = @("PSGitCompletions.psd1", "PSGitCompletions.dll")
 }
 
