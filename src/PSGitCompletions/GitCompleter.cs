@@ -93,6 +93,7 @@ namespace PowerCode
                 .Take(3)
                 .Select(ce => ce.Extent.Text)
                 .Skip(1).ToArray();
+            var cached = completeCommandParameters.Ast.Extent.Text.Contains("--cached");
             var (from, to) = commits switch {
                 {Length: 1} => (commits[0], null),
                 {Length: 2} => (commits[0], commits[1]),
@@ -101,19 +102,20 @@ namespace PowerCode
 
             if (completeCommandParameters.AfterDoubleDash) {
 
-                return Git.GetDiffableFiles(match:wordToComplete, from, to).Select(f=>new CompletionResult(f)).ToList();
+                return Git.GetDiffableFiles(match:wordToComplete, from, to, cached).Select(f=>new CompletionResult(f)).ToList();
             }
 
             if (wordToComplete.IsEmpty())
                 return Git.Log()
                     .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
                     .ToList();
-            if (!completeCommandParameters.IsCompletingCommand)
-                return Git.Log()
+            return completeCommandParameters.IsCompletingParameterName
+                ? GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete)
+                : Git.Log()
                     .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseStartsWith(value: wordToComplete))
-                    .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
+                    .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit,
+                        resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
                     .ToList();
-            return GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete);
         }
 
 

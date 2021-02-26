@@ -64,7 +64,7 @@ namespace PowerCode {
                 switch (ast.CommandElements[prevIndex])
                 {
                     case CommandParameterAst p:
-                        previousParameterName = p.ParameterName == "-" ? null : p.ParameterName;
+                        previousParameterName = p.ParameterName == "-" ? null : "-" + p.ParameterName;
 
                         break;
                     case StringConstantExpressionAst {Value: "-"} s:
@@ -74,10 +74,10 @@ namespace PowerCode {
                         var value = sce.Extent.Text;
                         var eq = value.IndexOf("=", StringComparison.Ordinal);
                         if (eq == -1) {
-                            previousParameterName = value[2..];
+                            previousParameterName = value;
                         }
                         else {
-                            previousParameterName = value[2..eq];
+                            previousParameterName = value[..eq];
                             previousParameterValue = value[(eq + 1)..];
                         }
                         break;

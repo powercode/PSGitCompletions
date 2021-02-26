@@ -5,15 +5,15 @@ namespace GitCompletionTests {
     public class CreateCompletionInfoTests {
         [DataTestMethod]
         [DataRow("git diff ", "diff", false, false, null, null, "", false, 9)]
-        [DataRow("git -P ", null, false, false, "P", null, "", true)]
+        [DataRow("git -P ", null, false, false, "-P", null, "", true)]
         [DataRow("git ", null, false, false, null, null, "", true)]
         [DataRow("git add ", "add", false, false, null, null)]
         [DataRow("git add -", "add", false, true, null, null, "-")]
-        [DataRow("git add -A ", "add", false, false, "A", null)]
+        [DataRow("git add -A ", "add", false, false, "-A", null)]
         [DataRow("git add -- ", "add", true, false, null, null)]
         [DataRow("git -P add ", "add", false, false, null, null)]
-        [DataRow("git -P ad", "ad", false, false, "P", null, "ad", true)]
-        [DataRow("git -P add --format=\"%a\" ", "add", false, false, "format", "\"%a\"")]
+        [DataRow("git -P ad", "ad", false, false, "-P", null, "ad", true)]
+        [DataRow("git -P add --format=\"%a\" ", "add", false, false, "--format", "\"%a\"")]
         public void CanParseCompletionInfo(string command, string commandName, bool afterDoubleDash, bool isCompletingParameterName, string? previousParameterName, string? previousParameterValue, string wordToComplete="", bool isCompletingCommand = false, int cursorPosition = -1)
         {
             var res = command.CreateCompleteCommandParameters();

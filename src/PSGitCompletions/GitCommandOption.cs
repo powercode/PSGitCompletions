@@ -8,7 +8,6 @@ namespace PowerCode {
 
         public string Completion { get; }
         public string ListText { get; }
-
         public string ToolTip { get; }
     }
 }
