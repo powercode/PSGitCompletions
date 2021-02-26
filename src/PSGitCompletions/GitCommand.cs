@@ -1,4 +1,7 @@
-﻿namespace PowerCode
+﻿using System;
+using System.Linq;
+
+namespace PowerCode
 {
     public class GitCommand
     {
@@ -485,7 +488,7 @@ If one of -a, -s, or -u <keyid> is passed, the command creates a tag object, and
             Description = description;
         }
 
-        public static GitCommandOption[] GetOptions(string name)
+        public static GitCommandOption[] GetOptions(string name, bool resolveAliases = true)
         {
             return name switch
             {
@@ -3433,8 +3436,19 @@ This option is only applicable when listing tags without annotation lines."),
                     new GitCommandOption("-v", @"-v", @"Verify the GPG signature of the given tag names."),
                     new GitCommandOption("--verify", @"--verify", @"Verify the GPG signature of the given tag names.")
                 },
-                _ => System.Array.Empty<GitCommandOption>()
+                _ => resolveAliases ? TryGetOptionsFromAlias(name) : System.Array.Empty<GitCommandOption>()
+
             };
+        }
+
+        private static GitCommandOption[] TryGetOptionsFromAlias(string name) {
+            var aliases = Git.GetAliases(name).ToArray();
+            if (aliases.Length != 1) {
+                return Array.Empty<GitCommandOption>();
+            }
+
+            var (alias, command, _) = aliases[0];
+            return alias != name ? Array.Empty<GitCommandOption>() : GetOptions(command, false);
         }
     }
 }

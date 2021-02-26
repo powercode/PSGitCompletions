@@ -66,6 +66,7 @@ namespace PowerCode
 
                     goto default;
                 case "diff": return CompleteDiff(completeCommandParameters);
+                case "difftool": return CompleteDiff(completeCommandParameters);
                 case "rebase":
                     if (wordToComplete.IsEmpty())
                         return Git.Log()
@@ -78,15 +79,29 @@ namespace PowerCode
                             .ToList();
                     goto default;
                 default:
-                    return GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions, wordToComplete: wordToComplete);
+                    return isCompletingParameterName
+                        ? (IList<CompletionResult>) GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions,
+                            wordToComplete: wordToComplete)
+                        : Array.Empty<CompletionResult>();
             }
         }
 
         private static IList<CompletionResult> CompleteDiff(CompleteCommandParameters completeCommandParameters) {
             var wordToComplete = completeCommandParameters.WordToComplete;
+            var commits = completeCommandParameters.Ast.CommandElements.Skip(1)
+                .Where(ce => !ce.Extent.Text.StartsWith("-"))
+                .Take(3)
+                .Select(ce => ce.Extent.Text)
+                .Skip(1).ToArray();
+            var (from, to) = commits switch {
+                {Length: 1} => (commits[0], null),
+                {Length: 2} => (commits[0], commits[1]),
+                _ => (null, null),
+            };
+
             if (completeCommandParameters.AfterDoubleDash) {
 
-                return Git.LsFiles(wordToComplete).Select(f=>new CompletionResult(f)).ToList();
+                return Git.GetDiffableFiles(match:wordToComplete, from, to).Select(f=>new CompletionResult(f)).ToList();
             }
 
             if (wordToComplete.IsEmpty())
@@ -127,9 +142,13 @@ namespace PowerCode
 
         private static IList<CompletionResult> CompleteGitCommands(string wordToComplete)
         {
-            return GitCommand.Commands.Where(c => c.Name.IgnoreCaseStartsWith(value: wordToComplete))
+            var commands = GitCommand.Commands.Where(c => c.Name.IgnoreCaseStartsWith(value: wordToComplete))
                 .Select(c => c.ToCompletionResult())
                 .ToList();
+            var aliases = Git.GetAliases(wordToComplete).Select(a => new CompletionResult(a.alias, a.alias, CompletionResultType.Command, $"alias: {a.command} {a.parameters}"));
+            commands.AddRange(aliases);
+            commands.Sort((result, completionResult) => string.CompareOrdinal(result.CompletionText, completionResult.CompletionText));
+            return commands;
         }
     }
 

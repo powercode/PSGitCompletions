@@ -171,9 +171,25 @@ namespace GitCompletionTests
                 "git diff-index --name-only --relative HEAD" => GitDiffIndexName,
                 "git log --oneline -50" => GetGitLog,
                 "git ls-files -- " => GetGitLsFiles,
+                "git config --get-regex ^alias\\." => GetGitAliases,
                 _ => throw new ArgumentException(command)
             };
         }
+
+        private static readonly string[] GetGitAliases = {
+            "alias.dt difftool",
+            "alias.mt mergetool",
+            "alias.f fetch",
+            "alias.cdiff diff --compact-summary",
+            "alias.fo fetch origin",
+            "alias.fu fetch upstream",
+            "alias.l log --oneline",
+            "alias.lg log --oneline --graph --decorate",
+            "alias.s status",
+            "alias.sb status -s -b",
+            "alias.fdiff difftool --dir-diff --tool=bc --no-prompt"
+        };
+
 
         private static readonly string[] GitHeads= {
                 "ext-method",

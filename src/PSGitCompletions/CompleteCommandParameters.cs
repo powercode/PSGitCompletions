@@ -44,7 +44,7 @@ namespace PowerCode {
             bool isCompletingCommand = index == 0 || cursorPosition == commandElementAst.Extent.EndOffset;
 
 
-            var commandText = commandElementAst?.Extent?.Text;
+            var commandName = commandElementAst?.Extent?.Text;
             var (currentElement, currentElementIndex) = ast.CommandElements.Select((ce, i) => (ce, i))
                 .FirstOrDefault(p => p.ce.Extent.StartOffset <= cursorPosition && p.ce.Extent.EndOffset >= cursorPosition);
 
@@ -86,7 +86,10 @@ namespace PowerCode {
 
             isCompletingParameterName = wordToComplete.StartsWith("-");
 
-            var gitCommandOptions = commandText is null ? Array.Empty<GitCommandOption>() : GitCommand.GetOptions(name: commandText);
+            if (commandName is not null)
+                commandName = ResolveCommandName(commandName);
+
+            var gitCommandOptions = commandName is null ? Array.Empty<GitCommandOption>() : GitCommand.GetOptions(name: commandName);
 
             if (previousParameterName == "--")
             {
@@ -94,8 +97,13 @@ namespace PowerCode {
                 previousParameterName = null;
             }
 
-            var completeCommandParameters = new CompleteCommandParameters(ast, currentElementIndex, isCompletingCommand, commandText, gitCommandOptions, previousParameterName, previousParameterValue, wordToComplete, afterDoubleDash, cursorPosition, isCompletingParameterName);
+            var completeCommandParameters = new CompleteCommandParameters(ast, currentElementIndex, isCompletingCommand, commandName, gitCommandOptions, previousParameterName, previousParameterValue, wordToComplete, afterDoubleDash, cursorPosition, isCompletingParameterName);
             return completeCommandParameters;
+        }
+
+        private static string? ResolveCommandName(string commandName) {
+            var cmd = GitCommand.Commands.FirstOrDefault(c => c.Name == commandName);
+            return cmd is null ? Git.GetAliases(commandName).FirstOrDefault().command : cmd.Name;
         }
     }
 }

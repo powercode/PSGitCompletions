@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using System.Threading;
 
 namespace PowerCode
 {
@@ -157,6 +158,8 @@ namespace PowerCode
             return heads;
         }
 
+        public static IEnumerable<string> GetDiffableFiles(string? match, string? fromCommit, string? toCommit) => Execute($"git diff --name-only {fromCommit} {toCommit} -- {match}*");
+
         public static IEnumerable<string> LsFiles(string match) => Execute($"git ls-files -- {match}");
 
         public static IEnumerable<string> Tags(string match)
@@ -170,6 +173,24 @@ namespace PowerCode
 
         public static IEnumerable<string> CommitableFiles(string match) => Execute("git diff-index --name-only --relative HEAD");
 
-        public static IEnumerable<GitLog> Log(int count = 50) => Execute($"git log --oneline -{count}").Select(l => new GitLog(l.Substring(0, 8), l[9..]));
+        public static IEnumerable<GitLog> Log(int count = 50) => Execute($"git log --oneline -{count}").Select(l => new GitLog(l.Substring(0, 7), l[9..]));
+
+        public static IList<(string alias, string command, string parameters)> GetAliases(string name) {
+            return Execute($"git config --get-regex ^alias\\.{name}")
+                .Select(t => {
+                    var aliasEnd = t.IndexOf(" ", StringComparison.Ordinal);
+                    var commandEnd =  t.IndexOf(" ", aliasEnd + 1, StringComparison.Ordinal);
+                    if (commandEnd == -1) {
+                        commandEnd = t.Length;
+                    }
+
+                    var paramStart = commandEnd + 1;
+                    var parameters = paramStart >= t.Length ? "" : t[paramStart..];
+
+                    var alias = t[6..aliasEnd];
+                    var command = t[(aliasEnd + 1)..commandEnd];
+                    return (alias, command, parameters);
+                }).ToList();
+        }
     }
 }
