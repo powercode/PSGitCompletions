@@ -125,7 +125,10 @@ namespace PowerCode
         }
 
         private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete) {
-            return Git.CommitableFiles(wordToComplete).Select(file => new CompletionResult(file)).ToArray();
+            return Git.Status()
+                .Where(s=>s.WorkTreeStatus != GitStatusKind.None && s.Path.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))
+                .Select(status => new CompletionResult(status.Path, status.Path, CompletionResultType.ProviderItem, $"status: {status.IndexStatus}"))
+                .ToArray();
         }
 
         private static IList<CompletionResult> CompleteBranches(string wordToComplete)

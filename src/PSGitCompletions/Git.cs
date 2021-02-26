@@ -52,6 +52,8 @@ namespace PowerCode
                 .Select(l => new GitRemoteRef(l.Substring(0, 40), l[41..]));
         }
 
+        public static IEnumerable<GitStatus> Status() => Execute("git status --porcelain").Select(GitStatusParser.FromStatusString);
+
         public static IEnumerable<GitRef> Refs(string match)
         {
             var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
