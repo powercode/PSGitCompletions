@@ -69,22 +69,43 @@ namespace PowerCode
                 case "difftool":
                     return CompleteDiff(completeCommandParameters);
                 case "rebase":
-                    if (wordToComplete.IsEmpty())
-                        return Git.Log()
-                            .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
-                            .ToList();
-                    else if (!isCompletingParameterName)
-                        return Git.Log()
-                            .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseStartsWith(value: wordToComplete))
-                            .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
-                            .ToList();
-                    goto default;
+                    return CompleteRebase(completeCommandParameters);
                 default:
                     return isCompletingParameterName
                         ? (IList<CompletionResult>) GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions,
                             wordToComplete: wordToComplete)
                         : Array.Empty<CompletionResult>();
             }
+        }
+
+        private static IList<CompletionResult> CompleteRebase(CompleteCommandParameters completeCommandParameters) {
+            var wordToComplete = completeCommandParameters.WordToComplete;
+            var isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
+
+            var commits = completeCommandParameters.Ast.CommandElements.Skip(1)
+                .Where(ce => !ce.Extent.Text.StartsWith("-"))
+                .Take(3)
+                .Select(ce => ce.Extent.Text)
+                .Skip(1).ToArray();
+
+            var (from, to) = commits switch
+            {
+                { Length: 1 } => (commits[0], null),
+                { Length: 2 } => (commits[0], commits[1]),
+                _ => (null, null),
+            };
+
+            if (wordToComplete.IsEmpty())
+                return Git.Log().TakeWhile(l => l.Commit != from)
+                    .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit, resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
+                    .ToList();
+            return isCompletingParameterName
+                ? GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete)
+                : Git.Log().TakeWhile(l => l.Commit != from)
+                    .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseStartsWith(value: wordToComplete))
+                    .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit,
+                        resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
+                    .ToList();
         }
 
         private static IList<CompletionResult> CompleteDiff(CompleteCommandParameters completeCommandParameters) {
@@ -94,12 +115,13 @@ namespace PowerCode
                 .Take(3)
                 .Select(ce => ce.Extent.Text)
                 .Skip(1).ToArray();
-            var cached = completeCommandParameters.Ast.Extent.Text.Contains("--cached");
             var (from, to) = commits switch {
                 {Length: 1} => (commits[0], null),
                 {Length: 2} => (commits[0], commits[1]),
                 _ => (null, null),
             };
+
+            var cached = completeCommandParameters.Ast.Extent.Text.Contains("--cached");
 
             if (completeCommandParameters.AfterDoubleDash) {
 
