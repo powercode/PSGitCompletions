@@ -4,13 +4,14 @@ using System.Linq;
 using System.Management.Automation.Language;
 
 namespace PowerCode {
-    public class CompleteCommandParameters {
+    public record CompleteCommandParameters {
         public CompleteCommandParameters(CommandAst ast, int currentElementIndex, bool isCompletingCommand, string? commandName, GitCommandOption[] gitCommandOptions, string? previousParameterName,
             string? previousParameterValue, string wordToComplete, bool afterDoubleDash, int cursorPosition, bool isCompletingParameterName) {
             Ast = ast;
             CurrentElementIndex = currentElementIndex;
             IsCompletingCommand = isCompletingCommand;
             CommandName = commandName;
+            CommandElementIndex = ast.CommandElements.Select((e, i) => (e, i)).FirstOrDefault(p => p.e.Extent.Text == commandName).i;
             GitCommandOptions = gitCommandOptions;
             PreviousParameterName = previousParameterName;
             PreviousParameterValue = previousParameterValue;
@@ -30,6 +31,7 @@ namespace PowerCode {
         public string WordToComplete { get; }
         public bool AfterDoubleDash { get; }
         public int CursorPosition { get; }
+        public int CommandElementIndex { get; }
 
         public bool IsCompletingParameterName { get; }
 

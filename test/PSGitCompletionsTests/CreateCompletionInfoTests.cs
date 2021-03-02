@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PowerCode;
 
 namespace GitCompletionTests {
     [TestClass]
@@ -12,10 +13,12 @@ namespace GitCompletionTests {
         [DataRow("git add -A ", "add", false, false, "-A", null)]
         [DataRow("git add -- ", "add", true, false, null, null)]
         [DataRow("git -P add ", "add", false, false, null, null)]
-        [DataRow("git -P ad", "ad", false, false, "-P", null, "ad", true)]
+        [DataRow("git -P ad", null, false, false, "-P", null, "ad", true)]
         [DataRow("git -P add --format=\"%a\" ", "add", false, false, "--format", "\"%a\"")]
         public void CanParseCompletionInfo(string command, string commandName, bool afterDoubleDash, bool isCompletingParameterName, string? previousParameterName, string? previousParameterValue, string wordToComplete="", bool isCompletingCommand = false, int cursorPosition = -1)
         {
+            using var scope = FakeGit.GetScope();
+
             var res = command.CreateCompleteCommandParameters();
             Assert.AreEqual(commandName, res.CommandName, "Expected same command name");
             Assert.AreEqual(afterDoubleDash, res.AfterDoubleDash, "Expected correct AfterDoubleDash");

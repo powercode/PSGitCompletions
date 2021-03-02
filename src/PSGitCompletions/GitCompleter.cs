@@ -39,7 +39,10 @@ namespace PowerCode
             switch (completeCommandParameters.CommandName)
             {
                 case "add":
-                    if (!isCompletingParameterName) return CompleteModifiedFiles(wordToComplete: wordToComplete);
+                    if (!isCompletingParameterName) return CompleteModifiedFiles(wordToComplete);
+                    goto default;
+                case "bisect":
+                    if (!isCompletingParameterName) return CompleteBisect(completeCommandParameters);
                     goto default;
                 case "branch":
                     if (!isCompletingParameterName) return CompleteBranches(wordToComplete: wordToComplete);
@@ -81,6 +84,35 @@ namespace PowerCode
                         : Array.Empty<CompletionResult>();
             }
         }
+
+        private static IList<CompletionResult> CompleteBisect(CompleteCommandParameters completeCommandParameters) {
+            var relativeIndex = completeCommandParameters.CurrentElementIndex - completeCommandParameters.CommandElementIndex;
+            return relativeIndex switch {
+                1 =>  CompleteCommands(completeCommandParameters.WordToComplete),
+                int i when i > 1 => CompleteSubParameter(i, completeCommandParameters.Ast.CommandElements[completeCommandParameters.CommandElementIndex+1].Extent.Text, completeCommandParameters.WordToComplete),
+                _ => Array.Empty<CompletionResult>(),
+            };
+
+
+            static IList<CompletionResult> CompleteCommands(string wordToComplete) {
+                var commands = new[] {"start", "bad", "new", "good", "old", "terms", "skip", "reset", "visualize", "view", "replay", "log", "run", "help"};
+                var res = new List<CompletionResult>(10);
+                foreach (var cmd in commands.Where(c => c.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))) {
+                    res.Add(new CompletionResult(cmd));
+                }
+
+                return res;
+            }
+
+            static IList<CompletionResult> CompleteSubParameter(int elementIndex, string subCommand, string wordToComplete) {
+                var res = new List<CompletionResult>();
+
+                return res;
+            }
+
+        }
+
+
 
         private static IList<CompletionResult> CompleteTag(CompleteCommandParameters completeCommandParameters) {
             var wordToComplete = completeCommandParameters.WordToComplete;

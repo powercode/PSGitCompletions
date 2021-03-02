@@ -73,7 +73,7 @@ namespace PowerCode
             return heads;
         }
 
-        public static IEnumerable<string> GetDiffableFiles(string? match, string? fromCommit, string? toCommit, bool cached = false) => Execute($"git diff --name-only {(cached ? "--cached" : "" )} {fromCommit} {toCommit} -- {match}*");
+        public static IEnumerable<string> GetDiffableFiles(string? match, string? fromCommit, string? toCommit, bool cached = false) => Execute($"git diff --name-only {(cached ? "--cached " : "" )}{fromCommit} {toCommit} -- {match}*");
 
         public static IEnumerable<string> LsFiles(string match) => Execute($"git ls-files -- {match}");
 
@@ -88,7 +88,7 @@ namespace PowerCode
 
         public static IEnumerable<string> CommitableFiles(string match) => Execute("git diff-index --name-only --relative HEAD");
 
-        public static IEnumerable<GitLog> Log(string? commit = null, int count = 50) => Execute($"git log --oneline -{count} {commit}").Select(l => new GitLog(l.Substring(0, 7), l[8..]));
+        public static IEnumerable<GitLog> Log(string? commit = null, int count = 50) => Execute($"git log --oneline -{count} {commit}").Select(l => new GitLog(l[..8], l[9..]));
 
         public static IList<(string alias, string command, string parameters)> GetAliases(string name) {
             return Execute($"git config --get-regex ^alias\\.{name}")
