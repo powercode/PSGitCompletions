@@ -217,7 +217,7 @@ namespace PowerCode
 
         private static IList<CompletionResult> CompleteCheckout(CompleteCommandParameters completeCommandParameters) {
             var wordToComplete = completeCommandParameters.WordToComplete;
-            return completeCommandParameters.AfterDoubleDash ? CompleteModifiedFiles(wordToComplete) : CompleteBranches(wordToComplete);
+            return completeCommandParameters.AfterDoubleDash ? CompleteModifiedFiles(wordToComplete) : CompleteBranchesAndLog(wordToComplete);
         }
 
         private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete) {
@@ -255,6 +255,14 @@ namespace PowerCode
             return Git.Heads(match: wordToComplete)
                 .Select(c => new CompletionResult(completionText: c, listItemText: c, resultType: CompletionResultType.ParameterValue, toolTip: c))
                 .ToList();
+        }
+
+        private static IList<CompletionResult> CompleteBranchesAndLog(string wordToComplete) {
+            var res = Git.Heads(match: wordToComplete)
+                .Select(c => new CompletionResult(completionText: c, listItemText: c, resultType: CompletionResultType.ParameterValue, toolTip: c))
+                .ToList();
+            res.AddRange(CompleteLog(wordToComplete));
+            return res;
         }
 
         private static List<CompletionResult> GitOptionsToCompletionResults(GitCommandOption[] gitCommandOptions, string wordToComplete)
