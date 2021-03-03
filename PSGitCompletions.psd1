@@ -18,5 +18,12 @@
     AliasesToExport   = ''
 
     FileList = @("PSGitCompletions.psd1", "PSGitCompletions.dll")
+
+    PrivateData = @{
+        PSData = @{
+            Tags = @('git')
+            ProjectUri = 'http://github.com/PowerCode/PSGitCompletions'
+        }
+    }
 }
 
