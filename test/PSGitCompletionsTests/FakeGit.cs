@@ -103,26 +103,26 @@ namespace GitCompletionTests {
         };
 
         private static readonly string[] GetGitLog = {
-            "afcff36f adding resharper settings to gitignore",
-            "2a9ace83 Adding tests and fixing issues",
-            "8e2a3ad3 Changing completion tests to distinguish between tests where the expected results are just a subset and those where all results are expected.",
-            "21175387 Enabling TypeInference use of runtime SafeExprEval for completion",
-            "2f74cd0a Moving CurrentTypeDefinitionAst to TypeInferenceContext",
-            "48e07bf6 Replace CompletionExecutionHelper with PowerShellExecutionHelper",
-            "6f02a0aa Removing the Ast.GetInferredType virtual methods from all ASTs",
-            "51253d25 Adding TypeInferenceVisitor with methods transformed from Ast.GetInferredType",
-            "06020f34 Fix New-Item to create correct symlink type (#2915) (#3509)",
-            "2851f7e8 Accept `-i` for an interactive shell (#3558)",
-            "47ec6b2a Use IntPtr(-1) for INVALID_HANDLE_VALUE instead of IntPtr.Zero (#3544)",
-            "4ad4b194 Convert tab indentations to spaces in *.cs files (#3551)",
-            "acec58c0 Make the output of $PSVersionTable in alphabetical order (#3530)",
-            "f0c0176a Typo in Format-Hex (#3539)",
-            "35168721 Use /bin/bash, fixes #3525",
-            "8d4db01a Add sudo for adding cert for OpenSUSE (#3524)",
-            "68bcd4b5 Removed trailing whitespace (#3485)",
-            "18c28f8f Fix markdown lint issues for SSH Remoting demo and enable related tests (#3484)",
-            "4697dd2b Adding public ValidRootDrives property to ValidateDrive (#3510)",
-            "753b1965 Fix crash at startup when env:HOME not set (#3437)"
+            "afcff36 adding resharper settings to gitignore",
+            "2a9ace8 Adding tests and fixing issues",
+            "8e2a3ad Changing completion tests to distinguish between tests where the expected results are just a subset and those where all results are expected.",
+            "2117538 Enabling TypeInference use of runtime SafeExprEval for completion",
+            "2f74cd0 Moving CurrentTypeDefinitionAst to TypeInferenceContext",
+            "48e07bf Replace CompletionExecutionHelper with PowerShellExecutionHelper",
+            "6f02a0a Removing the Ast.GetInferredType virtual methods from all ASTs",
+            "51253d2 Adding TypeInferenceVisitor with methods transformed from Ast.GetInferredType",
+            "06020f3 Fix New-Item to create correct symlink type (#2915) (#3509)",
+            "2851f7e Accept `-i` for an interactive shell (#3558)",
+            "47ec6b2 Use IntPtr(-1) for INVALID_HANDLE_VALUE instead of IntPtr.Zero (#3544)",
+            "4ad4b19 Convert tab indentations to spaces in *.cs files (#3551)",
+            "acec58c Make the output of $PSVersionTable in alphabetical order (#3530)",
+            "f0c0176 Typo in Format-Hex (#3539)",
+            "3516872 Use /bin/bash, fixes #3525",
+            "8d4db01 Add sudo for adding cert for OpenSUSE (#3524)",
+            "68bcd4b Removed trailing whitespace (#3485)",
+            "18c28f8 Fix markdown lint issues for SSH Remoting demo and enable related tests (#3484)",
+            "4697dd2 Adding public ValidRootDrives property to ValidateDrive (#3510)",
+            "753b196 Fix crash at startup when env:HOME not set (#3437)"
         };
 
 

@@ -68,7 +68,7 @@ namespace GitCompletionTests
         {
             using var scope = FakeGit.GetScope();
             var res = "git diff ".CompleteInput();
-            Assert.AreEqual("afcff36f", res[0].CompletionText);
+            Assert.AreEqual("afcff36", res[0].CompletionText);
             Assert.AreEqual("adding resharper settings to gitignore", res[0].ToolTip);
         }
 
@@ -126,7 +126,7 @@ namespace GitCompletionTests
         }
 
         [DataTestMethod]
-        [DataRow("git diff ", "afcff36f")]
+        [DataRow("git diff ", "afcff36")]
         [DataRow("git -P ", "add")]
         [DataRow("git ", "add")]
         [DataRow("git add ", "src/PSGitCompletions/Git.cs")]
