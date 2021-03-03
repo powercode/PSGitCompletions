@@ -91,7 +91,7 @@ namespace GitCompletionTests
 
         [DataTestMethod]
         [DataRow("git checkout -- ", "src/PSGitCompletions/Git.cs", 7)]
-        [DataRow("git checkout ", "ext-method", 10)]
+        [DataRow("git checkout ", "ext-method", 30)]
         public void CanCompleteCheckoutFiles(string command, string firstResult, int resultCount)
         {
             using var scope = FakeGit.GetScope();
