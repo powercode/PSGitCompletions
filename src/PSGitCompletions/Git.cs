@@ -56,14 +56,29 @@ namespace PowerCode
 
         public static IEnumerable<GitRef> Refs(string match)
         {
-            var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
-            foreach (var line in res) yield return new GitRef(line[.. 40], line[41..]);
+            var res = Execute($"git for-each-ref '--format=%(objectname:short=7)%00%(objecttype)%00%(refname:lstrip=2)%00%(subject)' 'refs/*/{match}*'");
+            foreach (var line in res)
+            {
+                var parts = line.Split('\0');
+                if (parts.Length != 4) yield break;
+
+                var objectType = parts[1] switch
+                {
+                    "blob" => GitRef.ObjectType.Blob,
+                    "tree" => GitRef.ObjectType.Tree,
+                    "commit" => GitRef.ObjectType.Commit,
+                    "tag" => GitRef.ObjectType.Tag,
+                    var invalidType => throw new BadOutputException($"Git ref has an invalid object type '{invalidType}'")
+                };
+
+                yield return new GitRef(parts[0], objectType, parts[2], parts[3]);
+            }
         }
 
-        public static IEnumerable<GitRef> Remotes(string match)
+        public static IEnumerable<GitRemote> Remotes(string match)
         {
             var res = Execute($"git for-each-ref '--format=%(refname)' '--sort=\"refname:strip=3\"' 'refs/heads/{match}*' 'refs/heads/{match}*/**'");
-            foreach (var line in res) yield return new GitRef(line.Substring(0, 40), line[41..]);
+            foreach (var line in res) yield return new GitRemote(line.Substring(0, 40), line[41..]);
         }
 
         public static IEnumerable<string> Heads(string match)
@@ -110,6 +125,11 @@ namespace PowerCode
 
         public static IEnumerable<string> GetCommitFiles(string? commit) {
             return commit is null ? Enumerable.Empty<string>() : Execute($"git diff {commit}~1 {commit} --name-only").ToArray();
+        }
+
+        public class BadOutputException : Exception
+        {
+            public BadOutputException(string message) : base(message) { }
         }
     }
 }

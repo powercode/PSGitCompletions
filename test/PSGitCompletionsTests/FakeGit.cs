@@ -134,6 +134,26 @@ namespace GitCompletionTests {
             "upstream	https://github.com/powershell/PowerShell (push)"
         };
 
+        private static readonly string[] GetGitRefs = {
+             "afcff36\0commit\0ext-method\0adding resharper settings to gitignore",
+             "2a9ace8\0commit\0foreach-member-typeinference\0Adding tests and fixing issues",
+             "8e2a3ad\0commit\0master\0Moving CurrentTypeDefinitionAst to TypeInferenceContext",
+             "2117538\0commit\0native-arg-hyphen\0Typo in Format-Hex (#3539)",
+             "2f74cd0\0commit\0overload-err\0Removing the Ast.GetInferredType virtual methods from all ASTs",
+             "48e07bf\0commit\0process-completion\0Use /bin/bash, fixes #3525",
+             "6f02a0a\0commit\0psmethod-func\0Fix crash at startup when env:HOME not set (#3437)",
+             "51253d2\0commit\0typeinference-visitor\0Adding public ValidRootDrives property to ValidateDrive (#3510)",
+             "06020f3\0commit\0updatehelp-progress\0Add sudo for adding cert for OpenSUSE (#3524)",
+             "2851f7e\0commit\0vs2017-build\0Enabling TypeInference use of runtime SafeExprEval for completion",
+             "47ec6b2\0commit\0SD/688741\0Accept `-i` for an interactive shell (#3558)",
+             "4ad4b19\0commit\0SD/692351\0Use IntPtr(-1) for INVALID_HANDLE_VALUE instead of IntPtr.Zero (#3544)",
+             "acec58c\0commit\0SD/693793\0Convert tab indentations to spaces in *.cs files (#3551)",
+             "f0c0176\0tag\0v0.1.0\0adding resharper settings to gitignore",
+             "3516872\0tag\0v0.2.0\0Moving CurrentTypeDefinitionAst to TypeInferenceContext",
+             "8d4db01\0tag\0v6.0.0-alpha.18\0Typo in Format-Hex (#3539)",
+             "68bcd4b\0tag\0v6.0.0-alpha.7\0Enabling TypeInference use of runtime SafeExprEval for completion",
+        };
+
         public static  string[] Execute(string command) {
             return command switch {
                 "git for-each-ref '--format=%(refname:strip=2)' 'refs/heads/*' 'refs/heads/*/**'" => GitHeads,
@@ -147,6 +167,7 @@ namespace GitCompletionTests {
                 "git ls-files -- " => GetGitLsFiles,
                 "git config --get-regex ^alias\\." => GetGitAliases,
                 "git config --get-regex ^alias\\.ad" => Array.Empty<string>(),
+                "git for-each-ref '--format=%(objectname:short=7)%00%(objecttype)%00%(refname:lstrip=2)%00%(subject)' 'refs/*/*'" => GetGitRefs,
                 _ => throw new ArgumentException(command)
             };
         }
