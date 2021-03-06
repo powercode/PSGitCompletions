@@ -64,10 +64,10 @@ namespace PowerCode
 
                 var objectType = parts[1] switch
                 {
-                    "blob" => GitRef.ObjectType.Blob,
-                    "tree" => GitRef.ObjectType.Tree,
-                    "commit" => GitRef.ObjectType.Commit,
-                    "tag" => GitRef.ObjectType.Tag,
+                    "blob" => GitObjectType.Blob,
+                    "tree" => GitObjectType.Tree,
+                    "commit" => GitObjectType.Commit,
+                    "tag" => GitObjectType.Tag,
                     var invalidType => throw new BadOutputException($"Git ref has an invalid object type '{invalidType}'")
                 };
 

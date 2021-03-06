@@ -4,25 +4,26 @@ namespace PowerCode
 {
     public struct GitRef
     {
-        public enum ObjectType
-        {
-            Blob,
-            Tree,
-            Commit,
-            Tag
-        }
 
         public string Commit { get; }
-        public ObjectType Type { get; }
+        public GitObjectType ObjectType { get; }
         public string Name { get; }
         public string Subject { get; }
 
-        public GitRef(string commit, ObjectType type, string name, string subject)
+        public GitRef(string commit, GitObjectType objectType, string name, string subject)
         {
             Commit = commit;
-            Type = type;
+            ObjectType = objectType;
             Name = name;
             Subject = subject;
         }
+    }
+
+    public enum GitObjectType
+    {
+        Blob,
+        Tree,
+        Commit,
+        Tag
     }
 }
