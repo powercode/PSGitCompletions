@@ -217,7 +217,7 @@ namespace PowerCode
 
         private static IList<CompletionResult> CompleteCheckout(CompleteCommandParameters completeCommandParameters) {
             var wordToComplete = completeCommandParameters.WordToComplete;
-            return completeCommandParameters.AfterDoubleDash ? CompleteModifiedFiles(wordToComplete) : CompleteBranchesAndLog(wordToComplete);
+            return completeCommandParameters.AfterDoubleDash ? CompleteModifiedFiles(wordToComplete) : CompleteRefsAndLog(wordToComplete);
         }
 
         private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete) {
@@ -257,12 +257,10 @@ namespace PowerCode
                 .ToList();
         }
 
-        private static IList<CompletionResult> CompleteBranchesAndLog(string wordToComplete) {
-            var res = Git.Heads(match: wordToComplete)
-                .Select(c => new CompletionResult(completionText: c, listItemText: c, resultType: CompletionResultType.ParameterValue, toolTip: c))
-                .ToList();
-            res.AddRange(CompleteLog(wordToComplete));
-            return res;
+        private static IList<CompletionResult> CompleteRefsAndLog(string wordToComplete)
+        {
+            return CompleteRefs(wordToComplete)
+                .Concat(CompleteLog(wordToComplete)).ToList();
         }
 
         private static List<CompletionResult> GitOptionsToCompletionResults(GitCommandOption[] gitCommandOptions, string wordToComplete)
@@ -282,17 +280,13 @@ namespace PowerCode
             commands.Sort((result, completionResult) => string.CompareOrdinal(result.CompletionText, completionResult.CompletionText));
             return commands;
         }
-    }
 
-    public struct GitRef
-    {
-        public string Commit { get; }
-        public string Name { get; }
-
-        public GitRef(string commit, string name)
+        private static IList<CompletionResult> CompleteRefs(string wordToComplete)
         {
-            Commit = commit;
-            Name = name;
+            return Git.Refs(wordToComplete)
+                .Select(r => new CompletionResult(r.Name, r.Name,
+                    CompletionResultType.ParameterValue, r.Subject))
+                .ToList();
         }
     }
 }
