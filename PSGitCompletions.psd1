@@ -3,7 +3,7 @@
 
     RootModule        = 'PSGitCompletions.dll'
 
-    ModuleVersion     = '1.0.2'
+    ModuleVersion     = '1.0.3'
 
     GUID              = '456512b8-bb86-47d7-835b-486b21bf5381'
 
