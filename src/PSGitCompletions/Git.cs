@@ -81,11 +81,14 @@ namespace PowerCode
             foreach (var line in res) yield return new GitRemote(line.Substring(0, 40), line[41..]);
         }
 
-        public static IEnumerable<string> Heads(string match)
+        public static IEnumerable<GitHead> Heads(string match)
         {
-            var heads = Execute($"git for-each-ref '--format=%(refname:strip=2)' 'refs/heads/{match}*' 'refs/heads/{match}*/**'").Distinct().ToArray();
+            var heads = Execute($"git for-each-ref '--format=%(refname:strip=2)%00%(subject)' 'refs/heads/{match}*' 'refs/heads/{match}*/**'").Distinct().ToArray();
             Array.Sort(array: heads);
-            return heads;
+            return heads.Select(s => {
+                var parts = s.Split('\0');
+                return new GitHead(parts[0], parts[1]);
+            });
         }
 
         public static IEnumerable<string> GetDiffableFiles(string? match, string? fromCommit, string? toCommit, bool cached = false) => Execute($"git diff --name-only {(cached ? "--cached " : "" )}{fromCommit} {toCommit} -- {match}*");
@@ -132,4 +135,7 @@ namespace PowerCode
             public BadOutputException(string message) : base(message) { }
         }
     }
+
+    public record GitHead (string Name, string Subject);
+
 }

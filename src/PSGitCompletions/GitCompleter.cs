@@ -23,17 +23,19 @@ namespace PowerCode
             ps.Invoke();
         }
 
-        public static IList<CompletionResult> CompleteInput(string wordToComplete, CommandAst ast, int cursorPosition)
+        public static IEnumerable<CompletionResult> CompleteInput(string wordToComplete, CommandAst ast, int cursorPosition)
         {
             var completeCommandParameters = CompleteCommandParameters.Create(wordToComplete, ast, cursorPosition);
-            if (completeCommandParameters.IsCompletingCommand) {
+            if (completeCommandParameters.IsCompletingCommand)
+            {
                 return CompleteGitCommands(wordToComplete: wordToComplete);
             }
             return CompleteGitCommand(completeCommandParameters);
         }
 
 
-        private static IList<CompletionResult> CompleteGitCommand(CompleteCommandParameters completeCommandParameters) {
+        private static IEnumerable<CompletionResult> CompleteGitCommand(CompleteCommandParameters completeCommandParameters)
+        {
             var wordToComplete = completeCommandParameters.WordToComplete;
             bool isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
             switch (completeCommandParameters.CommandName)
@@ -45,7 +47,7 @@ namespace PowerCode
                     if (!isCompletingParameterName) return CompleteBisect(completeCommandParameters);
                     goto default;
                 case "branch":
-                    if (!isCompletingParameterName) return CompleteBranches(wordToComplete: wordToComplete);
+                    if (!isCompletingParameterName) return CompleteHeads(wordToComplete: wordToComplete);
                     goto default;
                 case "checkout":
                     if (string.IsNullOrEmpty(value: completeCommandParameters.PreviousParameterName) && !isCompletingParameterName) return CompleteCheckout(completeCommandParameters);
@@ -73,48 +75,80 @@ namespace PowerCode
                     return CompleteDiff(completeCommandParameters);
                 case "rebase":
                     return CompleteRebase(completeCommandParameters);
+                case "reset":
+                    return CompleteReset(completeCommandParameters);
                 case "show":
                     return CompleteShow(completeCommandParameters);
                 case "tag":
                     return CompleteTag(completeCommandParameters);
                 default:
                     return isCompletingParameterName
-                        ? (IList<CompletionResult>) GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions,
+                        ? (IList<CompletionResult>)GitOptionsToCompletionResults(gitCommandOptions: completeCommandParameters.GitCommandOptions,
                             wordToComplete: wordToComplete)
                         : Array.Empty<CompletionResult>();
             }
         }
 
-        private static IList<CompletionResult> CompleteBisect(CompleteCommandParameters completeCommandParameters) {
+        private static IList<CompletionResult> CompleteBisect(CompleteCommandParameters completeCommandParameters)
+        {
             var relativeIndex = completeCommandParameters.CurrentElementIndex - completeCommandParameters.CommandElementIndex;
-            return relativeIndex switch {
-                1 =>  CompleteCommands(completeCommandParameters.WordToComplete),
-                int i when i > 1 => CompleteSubParameter(i, completeCommandParameters.Ast.CommandElements[completeCommandParameters.CommandElementIndex+1].Extent.Text, completeCommandParameters.WordToComplete),
+            return relativeIndex switch
+            {
+                1 => CompleteCommands(completeCommandParameters.WordToComplete),
+                int i when i > 1 => CompleteSubParameter(i, completeCommandParameters.Ast.CommandElements[completeCommandParameters.CommandElementIndex + 1].Extent.Text, completeCommandParameters.WordToComplete),
                 _ => Array.Empty<CompletionResult>(),
             };
 
 
-            static IList<CompletionResult> CompleteCommands(string wordToComplete) {
-                var commands = new[] {"start", "bad", "new", "good", "old", "terms", "skip", "reset", "visualize", "view", "replay", "log", "run", "help"};
+            static IList<CompletionResult> CompleteCommands(string wordToComplete)
+            {
+                var commands = new[] { "start", "bad", "new", "good", "old", "terms", "skip", "reset", "visualize", "view", "replay", "log", "run", "help" };
                 var res = new List<CompletionResult>(10);
-                foreach (var cmd in commands.Where(c => c.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))) {
+                foreach (var cmd in commands.Where(c => c.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase)))
+                {
                     res.Add(new CompletionResult(cmd));
                 }
 
                 return res;
             }
 
-            static IList<CompletionResult> CompleteSubParameter(int elementIndex, string subCommand, string wordToComplete) {
+            static IList<CompletionResult> CompleteSubParameter(int elementIndex, string subCommand, string wordToComplete)
+            {
                 var res = new List<CompletionResult>();
-
+                // todo
                 return res;
             }
 
         }
 
+        private static IEnumerable<CompletionResult> CompleteReset(CompleteCommandParameters completeCommandParameters)
+        {
+            var wordToComplete = completeCommandParameters.WordToComplete;
+            var isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
+            if (isCompletingParameterName)
+                return GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete);
 
+            if (completeCommandParameters.AfterDoubleDash)
+            {
+                return CompleteModifiedFiles(wordToComplete);
+            }
 
-        private static IList<CompletionResult> CompleteTag(CompleteCommandParameters completeCommandParameters) {
+            var positional = completeCommandParameters.GetPositionalParameters();
+            if (positional.Count == 0 || wordToComplete == positional[0].token)
+            {
+
+                return CompleteHead(wordToComplete)
+                    .Concat(CompleteHeads(wordToComplete))
+                    .Concat(CompleteRemoteRefs(wordToComplete));
+            }
+
+            return CompleteModifiedFiles(wordToComplete);
+        }
+
+        private static IEnumerable<CompletionResult> CompleteHead(string wordToComplete) => "HEAD".IgnoreCaseStartsWith(wordToComplete) ? new[] {new CompletionResult("HEAD")} : Array.Empty<CompletionResult>();
+
+        private static IEnumerable<CompletionResult> CompleteTag(CompleteCommandParameters completeCommandParameters)
+        {
             var wordToComplete = completeCommandParameters.WordToComplete;
             var isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
 
@@ -129,21 +163,30 @@ namespace PowerCode
                 return GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete);
 
 
-            if (positional != null && positional != wordToComplete) {
+            if (positional != null && positional != wordToComplete)
+            {
                 return CompleteBranchesAndLogCommits(wordToComplete);
             }
 
             return Array.Empty<CompletionResult>();
         }
 
-        private static IList<CompletionResult> CompleteShow(CompleteCommandParameters completeCommandParameters) {
+        private static IEnumerable<CompletionResult> CompleteRemoteRefs(string wordToComplete)
+        {
+            return Git.RemoteRefs().Where(r => r.Ref.IgnoreCaseStartsWith(wordToComplete) || r.Remote.IgnoreCaseStartsWith(wordToComplete))
+                .Select(c => new CompletionResult(c.RemoteRef));
+        }
+
+        private static IList<CompletionResult> CompleteShow(CompleteCommandParameters completeCommandParameters)
+        {
 
             var wordToComplete = completeCommandParameters.WordToComplete;
             var isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
 
             var parameters = completeCommandParameters.GetPositionalParameters();
-            var positional = parameters switch {
-                {Count: 1} => parameters[0].token,
+            var positional = parameters switch
+            {
+                { Count: 1 } => parameters[0].token,
                 _ => null,
             };
 
@@ -159,7 +202,8 @@ namespace PowerCode
 
         }
 
-        private static IList<CompletionResult> CompleteRebase(CompleteCommandParameters completeCommandParameters) {
+        private static IList<CompletionResult> CompleteRebase(CompleteCommandParameters completeCommandParameters)
+        {
             var wordToComplete = completeCommandParameters.WordToComplete;
             var isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
 
@@ -189,24 +233,27 @@ namespace PowerCode
                     .ToList();
         }
 
-        private static IList<CompletionResult> CompleteDiff(CompleteCommandParameters completeCommandParameters) {
+        private static IList<CompletionResult> CompleteDiff(CompleteCommandParameters completeCommandParameters)
+        {
             var wordToComplete = completeCommandParameters.WordToComplete;
             var commits = completeCommandParameters.Ast.CommandElements.Skip(1)
                 .Where(ce => !ce.Extent.Text.StartsWith("-"))
                 .Take(3)
                 .Select(ce => ce.Extent.Text)
                 .Skip(1).ToArray();
-            var (from, to) = commits switch {
-                {Length: 1} => (commits[0], null),
-                {Length: 2} => (commits[0], commits[1]),
+            var (from, to) = commits switch
+            {
+                { Length: 1 } => (commits[0], null),
+                { Length: 2 } => (commits[0], commits[1]),
                 _ => (null, null),
             };
 
             var cached = completeCommandParameters.Ast.Extent.Text.Contains("--cached");
 
-            if (completeCommandParameters.AfterDoubleDash) {
+            if (completeCommandParameters.AfterDoubleDash)
+            {
 
-                return Git.GetDiffableFiles(match:wordToComplete, from, to, cached).Select(f=>new CompletionResult(f)).ToList();
+                return Git.GetDiffableFiles(match: wordToComplete, from, to, cached).Select(f => new CompletionResult(f)).ToList();
             }
 
             return completeCommandParameters.IsCompletingParameterName
@@ -215,19 +262,22 @@ namespace PowerCode
         }
 
 
-        private static IList<CompletionResult> CompleteCheckout(CompleteCommandParameters completeCommandParameters) {
+        private static IList<CompletionResult> CompleteCheckout(CompleteCommandParameters completeCommandParameters)
+        {
             var wordToComplete = completeCommandParameters.WordToComplete;
             return completeCommandParameters.AfterDoubleDash ? CompleteModifiedFiles(wordToComplete) : CompleteRefsAndLog(wordToComplete);
         }
 
-        private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete) {
+        private static IList<CompletionResult> CompleteModifiedFiles(string wordToComplete)
+        {
             return Git.Status()
-                .Where(s=>s.WorkTreeStatus != GitStatusKind.None && s.Path.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))
+                .Where(s => s.WorkTreeStatus != GitStatusKind.None && s.Path.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))
                 .Select(status => new CompletionResult(status.Path, status.Path, CompletionResultType.ProviderItem, $"status: {status.WorkTreeStatus}"))
                 .ToArray();
         }
 
-        private static IList<CompletionResult> CompleteLog(string wordToComplete, int count = 50, string? startCommit = null) {
+        private static IList<CompletionResult> CompleteLog(string wordToComplete, int count = 50, string? startCommit = null)
+        {
             var log = Git.Log(startCommit, count);
 
             bool AlwaysTrue(GitLog logItem) => true;
@@ -241,20 +291,16 @@ namespace PowerCode
                 .ToList();
         }
 
-        private static IList<CompletionResult> CompleteBranchesAndLogCommits(string wordToComplete)
+        private static IEnumerable<CompletionResult> CompleteBranchesAndLogCommits(string wordToComplete)
         {
-            var heads = Git.Heads(match: wordToComplete)
-                .Select(c => new CompletionResult(completionText: c, listItemText: c, resultType: CompletionResultType.ParameterValue, toolTip: c))
-                .ToList();
-            heads.AddRange(CompleteLog(wordToComplete));
-            return heads;
+            return CompleteHeads(wordToComplete)
+                .Concat(CompleteLog(wordToComplete));
         }
 
-        private static IList<CompletionResult> CompleteBranches(string wordToComplete)
+        private static IEnumerable<CompletionResult> CompleteHeads(string wordToComplete)
         {
             return Git.Heads(match: wordToComplete)
-                .Select(c => new CompletionResult(completionText: c, listItemText: c, resultType: CompletionResultType.ParameterValue, toolTip: c))
-                .ToList();
+                .Select(c => new CompletionResult(completionText: c.Name, listItemText: c.Name, resultType: CompletionResultType.ParameterValue, toolTip: c.Subject));
         }
 
         private static IList<CompletionResult> CompleteRefsAndLog(string wordToComplete)

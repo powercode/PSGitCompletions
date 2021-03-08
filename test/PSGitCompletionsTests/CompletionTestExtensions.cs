@@ -8,8 +8,8 @@ namespace GitCompletionTests
 {
     static class CompletionTestExtensions
     {
-        public static IList<CompletionResult> CompleteInput(this string str) => str.CompleteInput(str.Length);
-        public static IList<CompletionResult> CompleteInput(this string str, int cursorPosition)
+        public static IList<CompletionResult> CompleteInput(this string str) => str.CompleteInput(str.Length).ToList();
+        public static IEnumerable<CompletionResult> CompleteInput(this string str, int cursorPosition)
         {
             var (wordToComplete, ast) = GetData(str, cursorPosition);
             return GitCompleter.CompleteInput(wordToComplete, ast, cursorPosition);
