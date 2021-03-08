@@ -77,6 +77,8 @@ namespace PowerCode
                     return CompleteRebase(completeCommandParameters);
                 case "reset":
                     return CompleteReset(completeCommandParameters);
+                case "restore":
+                    return CompleteRestore(completeCommandParameters);
                 case "show":
                     return CompleteShow(completeCommandParameters);
                 case "tag":
@@ -144,6 +146,21 @@ namespace PowerCode
 
             return CompleteModifiedFiles(wordToComplete);
         }
+
+        private static IEnumerable<CompletionResult> CompleteRestore(CompleteCommandParameters completeCommandParameters)
+        {
+            var wordToComplete = completeCommandParameters.WordToComplete;
+            var isCompletingParameterName = completeCommandParameters.IsCompletingParameterName;
+            if (isCompletingParameterName)
+                return GitOptionsToCompletionResults(completeCommandParameters.GitCommandOptions, wordToComplete);
+
+            if (completeCommandParameters.PreviousParameterName == "-s" || completeCommandParameters.PreviousParameterName == "--source") {
+                return CompleteBranchesAndLogCommits(wordToComplete);
+            }
+
+            return CompleteModifiedFiles(wordToComplete);
+        }
+
 
         private static IEnumerable<CompletionResult> CompleteHead(string wordToComplete) => "HEAD".IgnoreCaseStartsWith(wordToComplete) ? new[] {new CompletionResult("HEAD")} : Array.Empty<CompletionResult>();
 

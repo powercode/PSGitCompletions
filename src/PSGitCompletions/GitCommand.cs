@@ -470,6 +470,13 @@ Unless -f is given, the named tag must not yet exist.
 
 If one of -a, -s, or -u <keyid> is passed, the command creates a tag object, and requires a tag message. Unless -m <msg> or -F <file> is given, an editor is started for the user to type in the tag messag"),
 
+            new GitCommand("restore", "Restore working tree files",
+                @"git restore [<options>] [--source=<tree>] [--staged] [--worktree] [--] <pathspec>…​
+git restore [<options>] [--source=<tree>] [--staged] [--worktree] --pathspec-from-file=<file> [--pathspec-file-nul]
+git restore (-p|--patch) [<options>] [--source=<tree>] [--staged] [--worktree] [--] [<pathspec>…​]",
+                @"Restore specified paths in the working tree with some contents from a restore source.
+If a path is tracked but does not exist in the restore source, it will be removed to match the source.
+The command can also be used to restore the content in the index with --staged, or restore both the working tree and the index with --staged --worktree."),
             #endregion
         };
 
@@ -3440,6 +3447,35 @@ This option is only applicable when listing tags without annotation lines."),
                     new GitCommandOption("-u", @"-u <keyid>", @"Make a GPG-signed tag, using the given key."),
                     new GitCommandOption("-v", @"-v", @"Verify the GPG signature of the given tag names."),
                     new GitCommandOption("--verify", @"--verify", @"Verify the GPG signature of the given tag names.")
+                },
+                "restore" => new[] {
+                    new GitCommandOption("-s", "-s <tree>", @"Restore the working tree files with the content from the given tree. It is common to specify the source tree by naming a commit, branch or tag associated with it.  If not specified, the contents are restored from HEAD if --staged is given, otherwise from the index."),
+                    new GitCommandOption("--source", "--source=<tree>", @"Restore the working tree files with the content from the given tree. It is common to specify the source tree by naming a commit, branch or tag associated with it.  If not specified, the contents are restored from HEAD if --staged is given, otherwise from the index."),
+                    new GitCommandOption("-p", "-p", @"Interactively select hunks in the difference between the restore source and the restore location. See the “Interactive Mode” section of git-add to learn how to operate the --patch mode.  Note that --patch can accept no pathspec and will prompt to restore all modified paths."),
+                    new GitCommandOption("--patch", "--patch", @"Interactively select hunks in the difference between the restore source and the restore location. See the “Interactive Mode” section of git-add to learn how to operate the --patch mode.  Note that --patch can accept no pathspec and will prompt to restore all modified paths."),
+                    new GitCommandOption("-W", "-W", @"Specify the restore location. If neither option is specified, by default the working tree is restored. Specifying --staged will only restore the index. Specifying both restores both."),
+                    new GitCommandOption("--worktree", "--worktree", @"Specify the restore location. If neither option is specified, by default the working tree is restored. Specifying --staged will only restore the index. Specifying both restores both."),
+                    new GitCommandOption("-S", "-S", @"Specify the restore location. If neither option is specified, by default the working tree is restored. Specifying --staged will only restore the index. Specifying both restores both."),
+                    new GitCommandOption("--staged", "--staged", @"Specify the restore location. If neither option is specified, by default the working tree is restored. Specifying --staged will only restore the index. Specifying both restores both."),
+                    new GitCommandOption("-q", "-q", @"Quiet, suppress feedback messages. Implies --no-progress."),
+                    new GitCommandOption("--quiet", "--quiet", @"Quiet, suppress feedback messages. Implies --no-progress."),
+                    new GitCommandOption("--progress", "--progress", @"Progress status is reported on the standard error stream by default when it is attached to a terminal, unless --quiet is specified. This flag enables progress reporting even if not attached to a terminal, regardless of --quiet."),
+                    new GitCommandOption("--no-progress", "--no-progress", @"Progress status is reported on the standard error stream by default when it is attached to a terminal, unless --quiet is specified. This flag enables progress reporting even if not attached to a terminal, regardless of --quiet."),
+                    new GitCommandOption("--ours", "--ours", @"When restoring files in the working tree from the index, use stage #2 (ours) or #3 (theirs) for unmerged paths.  Note that during git rebase and git pull --rebase, ours and theirs may appear swapped. See the explanation of the same options in git-checkout for details."),
+                    new GitCommandOption("--theirs", "--theirs", @"When restoring files in the working tree from the index, use stage #2 (ours) or #3 (theirs) for unmerged paths.  Note that during git rebase and git pull --rebase, ours and theirs may appear swapped. See the explanation of the same options in git-checkout for details."),
+                    new GitCommandOption("-m", "-m", @"When restoring files on the working tree from the index, recreate the conflicted merge in the unmerged paths."),
+                    new GitCommandOption("--merge", "--merge", @"When restoring files on the working tree from the index, recreate the conflicted merge in the unmerged paths."),
+                    new GitCommandOption("--conflict", "--conflict=<style>", @"The same as --merge option above, but changes the way the conflicting hunks are presented, overriding the merge.conflictStyle configuration variable.  Possible values are ""merge"" (default) and ""diff3"" (in addition to what is shown by ""merge"" style, shows the original contents)."),
+                    new GitCommandOption("--ignore-unmerged", "--ignore-unmerged", @"When restoring files on the working tree from the index, do not abort the operation if there are unmerged entries and neither --ours, --theirs, --merge or --conflict is specified. Unmerged paths on the working tree are left alone."),
+                    new GitCommandOption("--ignore-skip-worktree-bits", "--ignore-skip-worktree-bits", @"In sparse checkout mode, by default is to only update entries matched by <pathspec> and sparse patterns in $GIT_DIR/info/sparse-checkout. This option ignores the sparse patterns and unconditionally restores any files in <pathspec>."),
+                    new GitCommandOption("--recurse-submodules", "--recurse-submodules", @"If <pathspec> names an active submodule and the restore location includes the working tree, the submodule will only be updated if this option is given, in which case its working tree will be restored to the commit recorded in the superproject, and any local modifications overwritten. If nothing (or --no-recurse-submodules) is used, submodules working trees will not be updated. Just like git-checkout, this will detach HEAD of the submodule."),
+                    new GitCommandOption("--no-recurse-submodules", "--no-recurse-submodules", @"If <pathspec> names an active submodule and the restore location includes the working tree, the submodule will only be updated if this option is given, in which case its working tree will be restored to the commit recorded in the superproject, and any local modifications overwritten. If nothing (or --no-recurse-submodules) is used, submodules working trees will not be updated. Just like git-checkout, this will detach HEAD of the submodule."),
+                    new GitCommandOption("--overlay", "--overlay", @"In overlay mode, the command never removes files when restoring. In no-overlay mode, tracked files that do not appear in the --source tree are removed, to make them match <tree> exactly. The default is no-overlay mode."),
+                    new GitCommandOption("--no-overlay", "--no-overlay", @"In overlay mode, the command never removes files when restoring. In no-overlay mode, tracked files that do not appear in the --source tree are removed, to make them match <tree> exactly. The default is no-overlay mode."),
+                    new GitCommandOption("--pathspec-from-file", "--pathspec-from-file=<file>", @"Pathspec is passed in <file> instead of commandline args. If <file> is exactly - then standard input is used. Pathspec elements are separated by LF or CR/LF. Pathspec elements can be quoted as explained for the configuration variable core.quotePath (see git-config). See also --pathspec-file-nul and global --literal-pathspecs."),
+                    new GitCommandOption("--pathspec-file-nul", "--pathspec-file-nul", @"Only meaningful with --pathspec-from-file. Pathspec elements are separated with NUL character and all other characters are taken literally (including newlines and quotes)."),
+                    new GitCommandOption("--", "--", @"Do not interpret any more arguments as options."),
+                    new GitCommandOption("<pathspec>…​", "<pathspec>…​", @"Limits the paths affected by the operation.  For more details, see the pathspec entry in gitglossary."),
                 },
                 _ => resolveAliases ? TryGetOptionsFromAlias(name) : System.Array.Empty<GitCommandOption>()
 

@@ -184,6 +184,7 @@ namespace GitCompletionTests {
 
             public void Dispose() {
                 _scope.Dispose();
+                GC.SuppressFinalize(this);
             }
         }
     }
