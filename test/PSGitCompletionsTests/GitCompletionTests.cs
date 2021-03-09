@@ -122,7 +122,6 @@ namespace GitCompletionTests
             Assert.AreEqual("origin", remoteRefs[0].Name);
             Assert.AreEqual("https://github.com/powershell/PowerShell (fetch)", remoteRefs[1].FetchUrl);
             Assert.AreEqual("https://github.com/powershell/PowerShell (fetch)", remoteRefs[1].FetchUrl);
-
         }
 
         [TestMethod]
@@ -130,8 +129,9 @@ namespace GitCompletionTests
             using var scope = FakeGit.GetScope();
 
             var desc = Git.BranchDescriptions().ToDictionary(c=>c.Name, b=>b.Description);
+            Assert.AreEqual(3, desc.Count);
             Assert.AreEqual("Main branch\r\nThis is the branch that releases are made from", desc["master"]);
-            Assert.AreEqual("Some other branch", desc["other"]);
+            Assert.AreEqual("Some other branch\r\n", desc["other"]);
         }
 
         [DataTestMethod]

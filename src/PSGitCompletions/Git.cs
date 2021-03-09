@@ -98,7 +98,14 @@ namespace PowerCode
             string? branchName = null;
             var builder = new StringBuilder(256);
             foreach (var head in heads) {
-                if (branchName  == null) {
+                if (head.StartsWith('\0') && branchName != null) {
+                    yield return new GitBranchDescription(branchName, builder.ToString());
+                    builder.Clear();
+                    branchName = head.Length == 1 ? null : head[8..^12];
+                    continue;
+                }
+                if (branchName == null)  {
+                    builder.Clear();
                     branchName  = head[7..^12]; // strip initial "branch." and trailing ".description'
                 }
                 else

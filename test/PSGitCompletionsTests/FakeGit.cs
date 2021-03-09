@@ -159,7 +159,9 @@ namespace GitCompletionTests {
             "Main branch",
             "This is the branch that releases are made from\0",
             "branch.other.description",
-            "Some other branch\0"
+            "Some other branch",
+            "\0branch.newline.description",
+            "Some desc ending in newline branch\0",
         };
 
         public static  string[] Execute(string command) {
