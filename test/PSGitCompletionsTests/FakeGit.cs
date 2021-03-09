@@ -154,6 +154,14 @@ namespace GitCompletionTests {
              "68bcd4b\0tag\0v6.0.0-alpha.7\0Enabling TypeInference use of runtime SafeExprEval for completion",
         };
 
+        private static readonly string[] GetBranchDescriptions = {
+            "branch.master.description",
+            "Main branch",
+            "This is the branch that releases are made from\0",
+            "branch.other.description",
+            "Some other branch\0"
+        };
+
         public static  string[] Execute(string command) {
             return command switch {
                 "git for-each-ref '--format=%(refname:strip=2)' 'refs/heads/*' 'refs/heads/*/**'" => GitHeads,
@@ -168,6 +176,7 @@ namespace GitCompletionTests {
                 "git config --get-regex ^alias\\." => GetGitAliases,
                 "git config --get-regex ^alias\\.ad" => Array.Empty<string>(),
                 "git for-each-ref '--format=%(objectname:short=7)%00%(objecttype)%00%(refname:lstrip=2)%00%(subject)' 'refs/*/*'" => GetGitRefs,
+                @"git config --local --null --get-regex branch\..+?\.description" => GetBranchDescriptions,
                 _ => throw new ArgumentException(command)
             };
         }

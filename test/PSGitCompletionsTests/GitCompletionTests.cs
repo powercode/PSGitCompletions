@@ -125,6 +125,15 @@ namespace GitCompletionTests
 
         }
 
+        [TestMethod]
+        public void CanGetBranchDescriptions() {
+            using var scope = FakeGit.GetScope();
+
+            var desc = Git.BranchDescriptions().ToDictionary(c=>c.Name, b=>b.Description);
+            Assert.AreEqual("Main branch\r\nThis is the branch that releases are made from", desc["master"]);
+            Assert.AreEqual("Some other branch", desc["other"]);
+        }
+
         [DataTestMethod]
         [DataRow("git diff ", "afcff36")]
         [DataRow("git -P ", "add")]

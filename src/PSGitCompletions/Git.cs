@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using System.Text;
 using System.Threading;
 
 namespace PowerCode
@@ -91,6 +92,31 @@ namespace PowerCode
             });
         }
 
+        public static IEnumerable<GitBranchDescription> BranchDescriptions() {
+            var heads = Execute(@"git config --local --null --get-regex branch\..+?\.description");
+
+            string? branchName = null;
+            var builder = new StringBuilder(256);
+            foreach (var head in heads) {
+                if (branchName  == null) {
+                    branchName  = head[7..^12]; // strip initial "branch." and trailing ".description'
+                }
+                else
+                {
+                    if (head.EndsWith('\0')) {
+                        builder.Append(head[..^1]);
+                        yield return new GitBranchDescription(branchName, builder.ToString());
+                        builder.Clear();
+                        branchName  = null;
+                    }
+                    else
+                    {
+                        builder.AppendLine(head);
+                    }
+                }
+            }
+        }
+
         public static IEnumerable<string> GetDiffableFiles(string? match, string? fromCommit, string? toCommit, bool cached = false) => Execute($"git diff --name-only {(cached ? "--cached " : "" )}{fromCommit} {toCommit} -- {match}*");
 
         public static IEnumerable<string> LsFiles(string match) => Execute($"git ls-files -- {match}");
@@ -137,5 +163,7 @@ namespace PowerCode
     }
 
     public record GitHead (string Name, string Subject);
+
+    public record GitBranchDescription(string Name, string Description);
 
 }
