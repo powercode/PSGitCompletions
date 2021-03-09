@@ -314,10 +314,23 @@ namespace PowerCode
                 .Concat(CompleteLog(wordToComplete));
         }
 
-        private static IEnumerable<CompletionResult> CompleteHeads(string wordToComplete)
-        {
+        private static IEnumerable<CompletionResult> CompleteHeads(string wordToComplete) {
+            var descs = Git.BranchDescriptions().ToDictionary(c=>c.Name);
+
+            string ToolTip(GitHead head)
+            {
+                if (descs.TryGetValue(head.Name, out var branchDescription)) {
+                    return @$"{branchDescription.Description}
+----
+HEAD at {head.Subject}
+";
+                }
+
+                return head.Subject;
+            }
+
             return Git.Heads(match: wordToComplete)
-                .Select(c => new CompletionResult(completionText: c.Name, listItemText: c.Name, resultType: CompletionResultType.ParameterValue, toolTip: c.Subject));
+                .Select(c => new CompletionResult(completionText: c.Name, listItemText: c.Name, resultType: CompletionResultType.ParameterValue, toolTip: ToolTip(c)));
         }
 
         private static IList<CompletionResult> CompleteRefsAndLog(string wordToComplete)
@@ -344,11 +357,23 @@ namespace PowerCode
             return commands;
         }
 
-        private static IList<CompletionResult> CompleteRefs(string wordToComplete)
-        {
+        private static IList<CompletionResult> CompleteRefs(string wordToComplete) {
+            var desc = Git.BranchDescriptions().ToDictionary(c => c.Name);
+            string ToolTip(GitRef gitRef) {
+
+
+                if (gitRef.ObjectType == GitObjectType.Commit && desc.TryGetValue(gitRef.Name, out var description)) {
+                    return @$"{description.Description}
+----
+HEAD at {gitRef.Subject}
+";
+                }
+                return gitRef.Subject;
+            }
+
             return Git.Refs(wordToComplete)
                 .Select(r => new CompletionResult(r.Name, r.Name,
-                    CompletionResultType.ParameterValue, r.Subject))
+                    CompletionResultType.ParameterValue, ToolTip(r)))
                 .ToList();
         }
     }
