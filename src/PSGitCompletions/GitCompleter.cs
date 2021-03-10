@@ -81,6 +81,9 @@ namespace PowerCode
                     return CompleteRestore(completeCommandParameters);
                 case "show":
                     return CompleteShow(completeCommandParameters);
+                case "switch":
+                    if (!isCompletingParameterName) return CompleteRefsAndLog(wordToComplete);
+                    goto default;
                 case "tag":
                     return CompleteTag(completeCommandParameters);
                 default:
