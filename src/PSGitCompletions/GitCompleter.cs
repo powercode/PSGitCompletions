@@ -250,6 +250,7 @@ namespace PowerCode
                     .Where(l => l.Commit.IgnoreCaseStartsWith(value: wordToComplete) || l.Message.IgnoreCaseContains(value: wordToComplete))
                     .Select(log => new CompletionResult(completionText: log.Commit, listItemText: log.Commit,
                         resultType: CompletionResultType.ParameterValue, toolTip: log.Message))
+                    .Concat(CompleteRefs(wordToComplete))
                     .ToList();
         }
 
