@@ -80,7 +80,7 @@ function Import-GitHelp {
             ShortDesc = $shortDesciption
             Description = (decode $description.Trim())
             Synopsis = (decode $synopsis.Trim())
-            Options = $options
+            Options = $options | sort-object {!$_.Completion.StartsWith("<")}, Completion
             PSTypeName = "GitCommandHelp"
         }
 
