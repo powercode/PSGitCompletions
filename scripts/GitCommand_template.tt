@@ -1,0 +1,50 @@
+﻿using System;
+using System.Linq;
+
+namespace PowerCode
+{
+    public class GitCommand
+    {
+        public static GitCommand[] Commands =
+        {
+            #region Commands
+            {commands}         
+            #endregion
+        };
+
+        public string Name { get; }
+        public string CommandDesc { get; }
+
+        public string Synopsis { get; }
+
+        public string Description { get; }
+
+        public GitCommand(string name, string commandDesc, string synopsis, string description)
+        {
+            Name = name;
+            CommandDesc = commandDesc;
+            Synopsis = synopsis;
+            Description = description;
+        }
+
+        public static GitCommandOption[] GetOptions(string name, bool resolveAliases = true)
+        {
+            return name switch
+            {
+               {options}
+                _ => resolveAliases ? TryGetOptionsFromAlias(name) : System.Array.Empty<GitCommandOption>()
+
+            };
+        }
+
+        private static GitCommandOption[] TryGetOptionsFromAlias(string name) {
+            var aliases = Git.GetAliases(name).ToArray();
+            if (aliases.Length != 1) {
+                return Array.Empty<GitCommandOption>();
+            }
+
+            var (alias, command, _) = aliases[0];
+            return alias != name ? Array.Empty<GitCommandOption>() : GetOptions(command, false);
+        }
+    }
+}
