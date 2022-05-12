@@ -82,7 +82,7 @@ namespace PowerCode
                 case "show":
                     return CompleteShow(completeCommandParameters);
                 case "switch":
-                    if (!isCompletingParameterName) return CompleteRefsAndLog(wordToComplete);
+                    if (!isCompletingParameterName) return CompleteBranch(wordToComplete, false);
                     goto default;
                 case "tag":
                     return CompleteTag(completeCommandParameters);
@@ -295,6 +295,18 @@ namespace PowerCode
                 .Select(status => new CompletionResult(status.Path, status.Path, CompletionResultType.ProviderItem, $"status: {status.WorkTreeStatus}"))
                 .ToArray();
         }
+
+        private static IList<CompletionResult> CompleteBranch(string wordToComplete, bool includeCurrent)
+        {
+            var log = Git.Branches();
+            
+            bool MatchesWordToComplete(GitBranch branch) => branch.Name.IgnoreCaseContains(value: wordToComplete) && (includeCurrent || !branch.IsHead);            
+
+            return log.Where(MatchesWordToComplete)
+                .Select(branch => new CompletionResult(completionText: branch.Name, listItemText: branch.Name, resultType: CompletionResultType.ParameterValue, toolTip: branch.Commit))
+                .ToList();
+        }
+
 
         private static IList<CompletionResult> CompleteLog(string wordToComplete, int count = 50, string? startCommit = null)
         {

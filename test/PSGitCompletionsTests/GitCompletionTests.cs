@@ -53,6 +53,15 @@ namespace GitCompletionTests
 
         }
 
+        
+        [TestMethod]
+        public void CanCompleteGitSwitchBranch()
+        {
+            using var scope = FakeGit.GetScope();
+            var res = "git switch ".CompleteInput();
+            Assert.AreEqual("buildfix", res[0].CompletionText);
+        }
+
         [DataTestMethod]
         [DataRow("git bisect ", "start")]
         [DataRow("git bisect g", "good")]

@@ -26,4 +26,6 @@ namespace PowerCode
         Commit,
         Tag
     }
+
+    public record GitBranch(string Commit, string Name, bool IsHead);
 }

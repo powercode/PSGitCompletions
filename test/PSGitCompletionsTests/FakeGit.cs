@@ -163,6 +163,12 @@ namespace GitCompletionTests {
             "\0branch.newline.description",
             "Some desc ending in newline branch\0",
         };
+                private static readonly string[] GetBranches = {
+            "13034a6d4\0buildfix\0",
+            "44098e771\0master\0*",
+            "b64c36393\0unmanaged_start\0",
+            "4f25173d9\0v7.2.3\0"
+        };
 
         public static  string[] Execute(string command) {
             return command switch {
@@ -179,6 +185,7 @@ namespace GitCompletionTests {
                 "git config --get-regex ^alias\\.ad" => Array.Empty<string>(),
                 "git for-each-ref '--format=%(objectname:short=7)%00%(objecttype)%00%(refname:lstrip=2)%00%(subject)' 'refs/*/*'" => GetGitRefs,
                 @"git config --local --null --get-regex branch\..+?\.description" => GetBranchDescriptions,
+                @"git branch '--format=%(objectname:short)%00%(refname:lstrip=2)%00%(HEAD)'" => GetBranches,
                 _ => throw new ArgumentException(command)
             };
         }

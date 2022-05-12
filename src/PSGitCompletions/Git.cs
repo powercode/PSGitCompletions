@@ -55,6 +55,18 @@ namespace PowerCode
 
         public static IEnumerable<GitStatus> Status() => Execute("git status --porcelain").Select(GitStatusParser.FromStatusString);
 
+        public static IEnumerable<GitBranch> Branches()
+        {
+            var res = Execute($"git branch '--format=%(objectname:short)%00%(refname:lstrip=2)%00%(HEAD)'");
+            foreach (var line in res)
+            {
+                var parts = line.Split('\0');
+                if (parts.Length != 3) yield break;
+                
+                yield return new GitBranch(parts[0], parts[1], parts[2] == "*");
+            }
+        }
+
         public static IEnumerable<GitRef> Refs(string match)
         {
             var res = Execute($"git for-each-ref '--format=%(objectname:short=7)%00%(objecttype)%00%(refname:lstrip=2)%00%(subject)' 'refs/*/{match}*'");
