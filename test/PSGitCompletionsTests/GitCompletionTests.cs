@@ -6,6 +6,8 @@ using System.Runtime.ExceptionServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PowerCode;
 
+[assembly:System.Diagnostics.DebuggerDisplay("{CompletionText}", Target = typeof(CompletionResult))]
+
 namespace GitCompletionTests
 {
     [TestClass]
@@ -36,8 +38,7 @@ namespace GitCompletionTests
             using var scope = FakeGit.GetScope();
             var res = "git add -".CompleteInput();
             Assert.AreEqual("--", res[0].CompletionText);
-            Assert.AreEqual("-A", res[1].CompletionText);
-            Assert.AreEqual("--all", res[2].CompletionText);
+            Assert.AreEqual("--all", res[1].CompletionText);
         }
 
 
